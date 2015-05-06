@@ -1,0 +1,7 @@
+
+- name: Be sure installed nginx
+  apt: name=nginx state=present
+  sudo: yes
+  tags: nginx
+
+- include: php7.yml

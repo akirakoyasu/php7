@@ -1,0 +1,96 @@
+
+- name: Be sure installed git
+  apt: name=git state=present
+  sudo: yes
+  tags: php7
+
+- name: Be sure installed packages need to build php7
+  apt: name=autoconf,bison,pkg-config state=present
+  sudo: yes
+  tags: php7
+
+- name: Be sure installed packages optional to build php7
+  apt:
+    name:
+      - libxml2-dev
+      - libssl-dev
+      - libbz2-dev
+      - libcurl3-dev
+      - libjpeg-dev
+      - libpng-dev
+      - libxpm-dev
+      - libfreetype6-dev
+      - libgmp-dev
+      - libmcrypt-dev
+      - libpspell-dev
+      - librecode-dev
+    state: present
+  sudo: yes
+  tags: php7
+
+- name: Be sure linked header
+  file: src=/usr/include/x86_64-linux-gnu/gmp.h dest=/usr/include/gmp.h state=link
+  sudo: yes
+  tags: php7
+
+- name: Be sure build dir
+  file: path={{ ansible_env.HOME }}/php7 state=directory
+  register: build_dir
+  tags: php7
+
+- name: Clone PHP repo
+  git: repo=https://git.php.net/repository/php-src.git
+       dest={{ build_dir.path }}/php-src
+       depth=1
+  tags: php7
+
+- name: Configure PHP
+  shell: >
+    ./buildconf &&
+    ./configure
+    --prefix={{ build_dir.path }}
+    --enable-fpm
+    --enable-mbstring
+    --enable-zip
+    --enable-bcmath
+    --enable-pcntl
+    --enable-ftp
+    --enable-exif
+    --enable-calendar
+    --enable-sysvmsg
+    --enable-sysvsem
+    --enable-sysvshm
+    --enable-wddx
+    --with-curl
+    --with-mcrypt
+    --with-iconv
+    --with-gmp
+    --with-pspell
+    --with-gd
+    --with-jpeg-dir=/usr
+    --with-png-dir=/usr
+    --with-zlib-dir=/usr
+    --with-xpm-dir=/usr
+    --with-freetype-dir=/usr
+    --enable-gd-native-ttf
+    --enable-gd-jis-conv
+    --with-openssl
+    --with-pdo-mysql
+    --with-gettext
+    --with-zlib
+    --with-bz2
+    --with-recode
+    --with-mysqli
+    chdir={{ build_dir.path }}/php-src
+  tags: php7
+
+- name: Build PHP
+  shell: >
+    make clean &&
+    make
+    chdir={{ build_dir.path }}/php-src
+  tags: php7
+
+- name: Install PHP
+  command: make install chdir={{ build_dir.path }}/php-src
+  tags: php7

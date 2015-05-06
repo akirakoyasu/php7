@@ -1,0 +1,5 @@
+
+- name: Be sure installed redis
+  apt: name=redis-server state=present
+  sudo: yes
+  tags: redis

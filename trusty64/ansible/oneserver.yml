@@ -1,0 +1,5 @@
+- hosts: oneserver
+  roles:
+    - common
+    - webtier
+    - dbtier

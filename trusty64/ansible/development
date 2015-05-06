@@ -1,0 +1,9 @@
+[webservers]
+web.dev.example.com
+
+[dbservers]
+db.dev.example.com
+
+[development:children]
+webservers
+dbservers
