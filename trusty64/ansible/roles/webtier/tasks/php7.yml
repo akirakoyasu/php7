@@ -24,6 +24,7 @@
       - libmcrypt-dev
       - libpspell-dev
       - librecode-dev
+      - libreadline-dev
     state: present
   sudo: yes
   tags: php7
@@ -81,6 +82,7 @@
     --with-bz2
     --with-recode
     --with-mysqli
+    --with-readline
     chdir={{ build_dir.path }}/php-src
   tags: php7
 

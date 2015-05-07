@@ -10,7 +10,7 @@
   tags: php7
 
 - name: Be sure installed packages optional to build php7
-  pkgng: name=jpeg,png,t1lib,libmcrypt,aspell,recode state=present
+  pkgng: name=jpeg,png,t1lib,libmcrypt,aspell,recode,readline state=present
   sudo: yes
   tags: php7
 
@@ -63,6 +63,7 @@
     --with-bz2
     --with-recode
     --with-mysqli
+    --with-readline
     chdir={{ build_dir.path }}/php-src
   tags: php7
 
