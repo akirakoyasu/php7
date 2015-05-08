@@ -1,0 +1,40 @@
+
+- name: Place rc script
+  copy: src=php7_fpm dest=/usr/local/etc/rc.d/php7_fpm mode="u=rwx,g=rx,o=rx"
+  sudo: yes
+  tags:
+    - php7
+    - php-fpm
+
+- name: Place fpm configuration file
+  copy: src=php-fpm.conf dest=/home/vagrant/php7/etc/php-fpm.conf
+  tags:
+    - php7
+    - php-fpm
+
+- name: Place pool configuration file
+  copy: src=www.conf dest=/home/vagrant/php7/etc/php-fpm.d/www.conf
+  tags:
+    - php7
+    - php-fpm
+
+#- name: Be sure service php7_fpm enabled and started
+#  service: name=php7_fpm enabled=yes state=started
+#  sudo: yes
+#  tags:
+#    - php7
+#    - php-fpm
+
+- name: Place nginx configuration file
+  copy: src=nginx.conf dest=/usr/local/etc/nginx/
+  sudo: yes
+  tags:
+    - php7
+    - php-fpm
+
+- name: Place script file
+  copy: src=index.php dest=/usr/local/www/html/
+  sudo: yes
+  tags:
+    - php7
+    - php-fpm
