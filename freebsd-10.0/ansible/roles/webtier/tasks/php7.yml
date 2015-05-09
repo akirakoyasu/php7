@@ -25,9 +25,15 @@
        depth=1
   tags: php7
 
+- name: Build Configure PHP
+  command: >
+    ./buildconf
+    chdir={{ build_dir.path }}/php-src
+    creates={{ build_dir.path }}/php-src/configure
+  tags: php7
+
 - name: Configure PHP
-  shell: >
-    ./buildconf &&
+  command: >
     ./configure
     --prefix={{ build_dir.path }}
     --enable-fpm
@@ -65,6 +71,7 @@
     --with-mysqli
     --with-readline
     chdir={{ build_dir.path }}/php-src
+    creates={{ build_dir.path }}/php-src/Makefile
   tags: php7
 
 - name: Build PHP
@@ -72,8 +79,12 @@
     make clean &&
     make
     chdir={{ build_dir.path }}/php-src
+    creates={{ build_dir.path }}/php-src/sapi/cli/php
   tags: php7
 
 - name: Install PHP
-  command: make install chdir={{ build_dir.path }}/php-src
+  command: >
+    make install
+    chdir={{ build_dir.path }}/php-src
+    creates={{ build_dir.path }}/bin/php
   tags: php7

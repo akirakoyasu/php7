@@ -1,6 +1,6 @@
 
 - name: Place rc script
-  copy: src=php-fpm/php7_fpm dest=/usr/local/etc/rc.d/php7_fpm mode="u=rwx,g=rx,o=rx"
+  copy: src=php-fpm/php7_fpm dest=/etc/init.d/php7_fpm mode="u=rwx,g=rx,o=rx"
   sudo: yes
   tags:
     - php7
@@ -26,7 +26,7 @@
     - php-fpm
 
 - name: Place nginx configuration file
-  copy: src=nginx/nginx.conf dest=/usr/local/etc/nginx/
+  copy: src=nginx/default dest=/etc/nginx/sites-available/default
   sudo: yes
   notify:
     - Restart nginx
@@ -35,7 +35,7 @@
     - php-fpm
 
 - name: Place script file
-  copy: src=www/index.php dest=/usr/local/www/html/
+  copy: src=www/index.php dest=/usr/share/nginx/html/
   sudo: yes
   tags:
     - php7

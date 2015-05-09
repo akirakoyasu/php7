@@ -35,13 +35,13 @@ php_opts="--fpm-config $php_fpm_CONF --pid $php_fpm_PID"
 
 php7_fpm_start()
 {
-    echo -n " Starting php7_fpm"
+    echo " Starting php7_fpm"
     $php_fpm_BIN --daemonize $php_opts
 }
 
 php7_fpm_stop()
 {
-    echo -n " Gracefully shutting down php7_fpm"
+    echo " Gracefully shutting down php7_fpm"
     kill -QUIT `cat $php_fpm_PID`
 }
 

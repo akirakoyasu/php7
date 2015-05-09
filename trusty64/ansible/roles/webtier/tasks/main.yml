@@ -5,3 +5,4 @@
   tags: nginx
 
 - include: php7.yml
+- include: php7_fpm.yml
