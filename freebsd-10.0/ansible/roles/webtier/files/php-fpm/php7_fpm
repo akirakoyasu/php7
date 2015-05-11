@@ -13,36 +13,27 @@
 #
 #php7_fpm_enable="YES"
 #
-php7_fpm_enable="${php7_fpm_enable-NO}"
 
 . /etc/rc.subr
 
-name="php7_fpm"
-rcvar=`set_rcvar`
-start_cmd="${name}_start"
-stop_cmd="${name}_stop"
-
-
 prefix=/home/vagrant/php7
 exec_prefix=${prefix}
-
 php_fpm_BIN=${exec_prefix}/sbin/php-fpm
 php_fpm_CONF=${prefix}/etc/php-fpm.conf
 php_fpm_PID=${prefix}/var/run/php-fpm.pid
-
 php_opts="--fpm-config $php_fpm_CONF --pid $php_fpm_PID"
 
+# rc script manner
+name="php7_fpm"
+rcvar="${name}_enable"
+start_cmd="${name}_start"
+command=${php_fpm_BIN}
+pidfile=${php_fpm_PID}
 
 php7_fpm_start()
 {
-    echo " Starting php7_fpm"
+    echo "Starting php7_fpm"
     $php_fpm_BIN --daemonize $php_opts
-}
-
-php7_fpm_stop()
-{
-    echo " Gracefully shutting down php7_fpm"
-    kill -QUIT `cat $php_fpm_PID`
 }
 
 load_rc_config $name
