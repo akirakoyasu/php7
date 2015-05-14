@@ -8,12 +8,16 @@
 
 - name: Place fpm configuration file
   copy: src=php-fpm/php-fpm.conf dest=/home/vagrant/php7/etc/php-fpm.conf
+  notify:
+    - Restart php7_fpm
   tags:
     - php7
     - php-fpm
 
 - name: Place pool configuration file
   copy: src=php-fpm/www.conf dest=/home/vagrant/php7/etc/php-fpm.d/www.conf
+  notify:
+    - Restart php7_fpm
   tags:
     - php7
     - php-fpm

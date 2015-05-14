@@ -2,4 +2,7 @@
 - name: Restart nginx
   service: name=nginx state=restarted
   sudo: yes
-  tags: nginx
+
+- name: Restart php7_fpm
+  service: name=php7_fpm state=restarted
+  sudo: yes
