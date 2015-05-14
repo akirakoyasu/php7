@@ -39,6 +39,14 @@
   register: build_dir
   tags: php7
 
+- name: Clean build
+  file: path={{ item }} state=absent
+  with_items:
+    - '{{ build_dir.path }}/php-src/configure'
+    - '{{ build_dir.path }}/php-src/Makefile'
+    - '{{ build_dir.path }}/php-src/sapi/cli/php'
+    - '{{ build_dir.path }}/bin/php'
+
 - name: Clone PHP repo
   git: repo=https://git.php.net/repository/php-src.git
        dest={{ build_dir.path }}/php-src
