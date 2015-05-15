@@ -26,6 +26,7 @@
     - '{{ build_dir.path }}/php-src/Makefile'
     - '{{ build_dir.path }}/php-src/sapi/cli/php'
     - '{{ build_dir.path }}/bin/php'
+  when: php7_clean_build
 
 - name: Clone PHP repo
   git: repo=https://git.php.net/repository/php-src.git
@@ -95,4 +96,6 @@
     make install
     chdir={{ build_dir.path }}/php-src
     creates={{ build_dir.path }}/bin/php
+  notify:
+    - Restart php7_fpm
   tags: php7

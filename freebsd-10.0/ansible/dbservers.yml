@@ -1,9 +1,5 @@
 - hosts: dbservers
 
-  pre_tasks:
-  - name: set ansible_python_interpreter
-    set_fact: ansible_python_interpreter="/usr/local/bin/python2"
-
   roles:
     - common
     - dbtier
