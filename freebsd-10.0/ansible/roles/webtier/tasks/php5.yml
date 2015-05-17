@@ -9,8 +9,11 @@
     dest={{ build_dir.path }}/{{ php5_version }}.tar.bz2
   tags: php5
 
+# unavailable unarchive from bug https://github.com/ansible/ansible/issues/6723
 - name: Unpack tarball
-  unarchive: src={{ build_dir.path }}/{{ php5_version }}.tar.bz2 dest={{ build_dir.path }}/ copy=no
+  command: tar xvfj {{ build_dir.path }}/{{ php5_version }}.tar.bz2
+    chdir={{ build_dir.path }}
+    creates={{ build_dir.path }}/{{ php5_version }}/
   tags: php5
 
 - name: Configure PHP

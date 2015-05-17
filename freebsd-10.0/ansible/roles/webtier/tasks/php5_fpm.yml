@@ -31,7 +31,7 @@
     - php-fpm
 
 - name: Place script file
-  copy: src={{ item }} dest=/usr/share/nginx/html/
+  copy: src={{ item }} dest=/usr/local/www/html/
   sudo: yes
   tags:
     - php5

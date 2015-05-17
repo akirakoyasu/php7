@@ -30,7 +30,7 @@ start_cmd="${name}_start"
 command=${php_fpm_BIN}
 pidfile=${php_fpm_PID}
 
-php7_fpm_start()
+php5_fpm_start()
 {
     echo "Starting ${name}"
     $php_fpm_BIN --daemonize $php_opts
