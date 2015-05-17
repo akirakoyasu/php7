@@ -6,3 +6,6 @@
 
 - include: php7.yml
 - include: php7_fpm.yml
+
+- include: php5.yml
+- include: php5_fpm.yml

@@ -74,5 +74,6 @@ Vagrant.configure(2) do |config|
       "oneserver" => ["default"]
     }
     ansible.verbose = 'v'
+    # ansible.tags = 'php5'
   end
 end

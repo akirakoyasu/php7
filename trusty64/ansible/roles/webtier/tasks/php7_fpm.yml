@@ -39,8 +39,11 @@
     - php-fpm
 
 - name: Place script file
-  copy: src=www/index.php dest=/usr/share/nginx/html/
+  copy: src={{ item }} dest=/usr/share/nginx/html/
   sudo: yes
   tags:
     - php7
     - php-fpm
+  with_items:
+    - www/index.php
+    - www/bench.php

@@ -41,3 +41,4 @@ alias cp='cp -i'
 alias mv='mv -i'
 
 alias ls='ls --color --classify'
+alias less='less -R'
