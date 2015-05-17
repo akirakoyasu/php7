@@ -34,19 +34,15 @@
   sudo: yes
   tags: php7
 
+- name: Clean build
+  file: path={{ ansible_env.HOME }}/php7 state=absent
+  when: php7_clean_build
+  tags: php7
+
 - name: Be sure build dir
   file: path={{ ansible_env.HOME }}/php7 state=directory
   register: build_dir
   tags: php7
-
-- name: Clean build
-  file: path={{ item }} state=absent
-  with_items:
-    - '{{ build_dir.path }}/php-src/configure'
-    - '{{ build_dir.path }}/php-src/Makefile'
-    - '{{ build_dir.path }}/php-src/sapi/cli/php'
-    - '{{ build_dir.path }}/bin/php'
-  when: php7_clean_build
 
 - name: Clone PHP repo
   git: repo=https://git.php.net/repository/php-src.git

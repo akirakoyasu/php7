@@ -1,4 +1,9 @@
 
+- name: Clean build
+  file: path={{ ansible_env.HOME }}/php5 state=absent
+  when: php5_clean_build
+  tags: php5
+
 - name: Be sure build dir
   file: path={{ ansible_env.HOME }}/php5 state=directory
   register: build_dir
