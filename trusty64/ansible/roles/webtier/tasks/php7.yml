@@ -34,6 +34,13 @@
   sudo: yes
   tags: php7
 
+- name: Stop service for clean build
+  service: name=php7_fpm state=stopped
+  sudo: yes
+  ignore_errors: yes
+  when: php7_clean_build
+  tags: php7
+
 - name: Clean build
   file: path={{ ansible_env.HOME }}/php7 state=absent
   when: php7_clean_build

@@ -1,4 +1,11 @@
 
+- name: Stop service for clean build
+  service: name=php5_fpm state=stopped
+  sudo: yes
+  ignore_errors: yes
+  when: php5_clean_build
+  tags: php5
+
 - name: Clean build
   file: path={{ ansible_env.HOME }}/php5 state=absent
   when: php5_clean_build
