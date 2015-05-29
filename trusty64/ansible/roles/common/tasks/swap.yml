@@ -1,0 +1,21 @@
+- name: Create swap space
+  command: dd if=/dev/zero of=/swapfile bs=1M count=1024
+  sudo: yes
+  when: ansible_swaptotal_mb < 1
+  tags: swap
+
+- name: Make swap
+  command: mkswap /swapfile
+  sudo: yes
+  when: ansible_swaptotal_mb < 1
+  tags: swap
+
+- name: Mount swap
+  mount: name=none src=/swapfile fstype=swap opts=sw state=present
+  sudo: yes
+  tags: swap
+
+- name: Turn swap on
+  command: swapon -a
+  sudo: yes
+  tags: swap

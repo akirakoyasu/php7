@@ -21,3 +21,5 @@
   easy_install: name=pip executable=easy_install-3.4
   sudo: yes
   tags: python
+
+- include: swap.yml
