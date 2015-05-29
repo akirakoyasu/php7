@@ -1,9 +1,9 @@
 # PHP 7.0
 
-**[Context Sensitive Lexer](Context_Sensitive_Lexer.md)**  
-Proposal to have a context sensitive lexer for PHP with support for semi-reserved words (Created 2015-02-15)
+**[文脈依存の字句解析](Context_Sensitive_Lexer.md)**  
+半予約語をサポートして、PHPに文脈依存の字句解析を導入する提案（2015-02-15作成）
 
-**[Add preg_replace_callback_array function](Add_preg_replace_callback_array_function.md)**  
+**[preg_replace_callback_array関数の追加](Add_preg_replace_callback_array_function.md)**  
 A RFC proposing each pattern can easily have a specific callback.
 
 **[Reliable User-land CSPRNG]()**  
