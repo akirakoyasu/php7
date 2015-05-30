@@ -4,13 +4,13 @@
 半予約語をサポートして、PHPに文脈依存の字句解析を導入する提案（2015-02-15作成）
 
 **[preg_replace_callback_array関数の追加](Add_preg_replace_callback_array_function.md)**  
-A RFC proposing each pattern can easily have a specific callback.
+それぞれのパターンに、簡単にコールバック関数を指定できるようにするRFC提案
 
-**[Reliable User-land CSPRNG]()**  
-A proposal to add a reliable CSPRNG (Created 2015-02-20)
+**[信頼できるユーザ空間CSPRNG（暗号論的擬似乱数生成器）](Reliable_User-land_CSPRNG.md)**  
+信頼できるCSPRNG（暗号論的擬似乱数生成器）を追加する提案（2015-02-20作成）
 
-**[Anonymous Class Support]()**  
-This RFC proposes support for anonymous classes.
+**[匿名クラスのサポート](Anonymous_Class_Support.md)**  
+このRFCは匿名クラスのサポートを提案する
 
 **[Generator Delegation]()**  
 This RFC proposes new syntax to delegate generator function operations to sub-iterators/generators (Created 2015-03-01)

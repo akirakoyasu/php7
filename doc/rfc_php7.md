@@ -6,10 +6,10 @@ Proposal to have a context sensitive lexer for PHP with support for semi-reserve
 **[Add preg_replace_callback_array function](Add_preg_replace_callback_array_function.md)**  
 A RFC proposing each pattern can easily have a specific callback.
 
-**[Reliable User-land CSPRNG]()**  
+**[Reliable User-land CSPRNG](Reliable_User-land_CSPRNG.md)**  
 A proposal to add a reliable CSPRNG (Created 2015-02-20)
 
-**[Anonymous Class Support]()**  
+**[Anonymous Class Support](Anonymous_Class_Support.md)**  
 This RFC proposes support for anonymous classes.
 
 **[Generator Delegation]()**  
