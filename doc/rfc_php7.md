@@ -12,13 +12,13 @@ A proposal to add a reliable CSPRNG (Created 2015-02-20)
 **[Anonymous Class Support](Anonymous_Class_Support.md)**  
 This RFC proposes support for anonymous classes.
 
-**[Generator Delegation]()**  
+**[Generator Delegation](Generator_Delegation.md)**  
 This RFC proposes new syntax to delegate generator function operations to sub-iterators/generators (Created 2015-03-01)
 
-**[Reserve More Type Names in PHP 7]()**  
+**[Reserve More Type Names in PHP 7](Reserve_More_Type_Names_in_PHP_7.md)**  
 Reserves int, float, string, bool, true, false and null in class names or namespaces. (Created 2015-02-18)
 
-**[Constructor behaviour of internal classes]()**  
+**[Constructor behaviour of internal classes](Constructor_behaviour_of_internal_classes.md)**  
 Cleanup undesirable behaviour of constructors internal classes. (Created 2015-03-01)
 
 **[Reclassify E_STRICT notices]()**  

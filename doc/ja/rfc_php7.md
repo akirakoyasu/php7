@@ -4,7 +4,7 @@
 半予約語をサポートして、PHPに文脈依存の字句解析を導入する提案（2015-02-15作成）
 
 **[preg_replace_callback_array関数の追加](Add_preg_replace_callback_array_function.md)**  
-それぞれのパターンに、簡単にコールバック関数を指定できるようにするRFC提案
+それぞれのパターンに、簡単にコールバック関数を指定できるようにする提案RFC
 
 **[信頼できるユーザ空間CSPRNG（暗号論的擬似乱数生成器）](Reliable_User-land_CSPRNG.md)**  
 信頼できるCSPRNG（暗号論的擬似乱数生成器）を追加する提案（2015-02-20作成）
@@ -12,14 +12,14 @@
 **[匿名クラスのサポート](Anonymous_Class_Support.md)**  
 このRFCは匿名クラスのサポートを提案する
 
-**[Generator Delegation]()**  
-This RFC proposes new syntax to delegate generator function operations to sub-iterators/generators (Created 2015-03-01)
+**[ジェネレータの委譲](Generator_Delegation.md)**  
+このRFCはジェネレータ関数の動作をサブイテレータやサブジェネレータへ委譲する、新しい構文を提案する（2015-03-01作成）
 
-**[Reserve More Type Names in PHP 7]()**  
-Reserves int, float, string, bool, true, false and null in class names or namespaces. (Created 2015-02-18)
+**[PHP7で型名を追加予約する](Reserve_More_Type_Names_in_PHP_7.md)**  
+クラス名や名前空間でint, float, string, bool, true, false and nullを予約する（2015-02-18作成）
 
-**[Constructor behaviour of internal classes]()**  
-Cleanup undesirable behaviour of constructors internal classes. (Created 2015-03-01)
+**[内部クラスのコンストラクタの振る舞い](Constructor_behaviour_of_internal_classes.md)**  
+内部クラスのコンストラクタの望ましくない振る舞いをきれいにする（2015-03-01作成）
 
 **[Reclassify E_STRICT notices]()**  
 This RFC proposes to reclassify our few existing E_STRICT notices to different categories. (Created 2015-02-22)
