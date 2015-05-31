@@ -21,19 +21,19 @@ Reserves int, float, string, bool, true, false and null in class names or namesp
 **[Constructor behaviour of internal classes](Constructor_behaviour_of_internal_classes.md)**  
 Cleanup undesirable behaviour of constructors internal classes. (Created 2015-03-01)
 
-**[Reclassify E_STRICT notices]()**  
+**[Reclassify E_STRICT notices](Reclassify_E_STRICT_notices.md)**  
 This RFC proposes to reclassify our few existing E_STRICT notices to different categories. (Created 2015-02-22)
 
-**[Remove PHP 4 Constructors]()**  
+**[Remove PHP 4 Constructors](Remove_PHP_4_Constructors.md)**  
 Stop recognizing methods with the same name as the defining class as constructors. (Created 2014-11-17; Voting closed 2015-03-10)
 
-**[Remove the date.timezone warning]()**  
+**[Remove the date.timezone warning](Remove_the_date.timezone_warning.md)**  
 (Created 2015-01-27)
 
-**[Combined Comparison (Spaceship) Operator]()**  
+**[Combined Comparison (Spaceship) Operator](Combined_Comparison_Spaceship_Operator.md)**  
 Proposes a new comparison operator, <=> (Created 2014-02-12, revived 2015-01-19)
 
-**[Fix "foreach" behavior]()**  
+**[Fix "foreach" behavior](Fix_foreach_behavior.md)**  
 The RFC defines foreach statement behavior for the cases where is wasn't defined before and implementation provided inconsistent results. (Created 2015-01-29)
 
 **[Removal of dead SAPIs and extensions]()**  

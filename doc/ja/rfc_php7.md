@@ -16,24 +16,24 @@
 このRFCはジェネレータ関数の動作をサブイテレータやサブジェネレータへ委譲する、新しい構文を提案する（2015-03-01作成）
 
 **[PHP7で型名を追加予約する](Reserve_More_Type_Names_in_PHP_7.md)**  
-クラス名や名前空間でint, float, string, bool, true, false and nullを予約する（2015-02-18作成）
+クラス名や名前空間でint, float, string, bool, true, false, nullを予約する（2015-02-18作成）
 
 **[内部クラスのコンストラクタの振る舞い](Constructor_behaviour_of_internal_classes.md)**  
 内部クラスのコンストラクタの望ましくない振る舞いをきれいにする（2015-03-01作成）
 
-**[Reclassify E_STRICT notices]()**  
-This RFC proposes to reclassify our few existing E_STRICT notices to different categories. (Created 2015-02-22)
+**[E_STRICT警告を再分類する](Reclassify_E_STRICT_notices.md)**  
+このRFCは既存のごく少数のE_STRICT警告を別のカテゴリへ再分類することを提案する（2015-02-22作成）
 
-**[Remove PHP 4 Constructors]()**  
-Stop recognizing methods with the same name as the defining class as constructors. (Created 2014-11-17; Voting closed 2015-03-10)
+**[PHP4形式のコンストラクタを削除する](Remove_PHP_4_Constructors.md)**  
+定義しているクラスと同名のメソッドをコンストラクタとして認識することをやめる（2014-11-17作成、2015-03-10審議終了）
 
-**[Remove the date.timezone warning]()**  
-(Created 2015-01-27)
+**[date.timezoneの警告を削除](Remove_the_date.timezone_warning.md)**  
+（2015-01-27作成）
 
-**[Combined Comparison (Spaceship) Operator]()**  
-Proposes a new comparison operator, <=> (Created 2014-02-12, revived 2015-01-19)
+**[結合比較（スペースシップ）演算子](Combined_Comparison_Spaceship_Operator.md)**  
+新しい比較演算子、<=>を提案する（2014-02-12作成、2015-01-19再開）
 
-**[Fix "foreach" behavior]()**  
+**["foreach"の振る舞いを修正する](Fix_foreach_behavior.md)**  
 The RFC defines foreach statement behavior for the cases where is wasn't defined before and implementation provided inconsistent results. (Created 2015-01-29)
 
 **[Removal of dead SAPIs and extensions]()**  
