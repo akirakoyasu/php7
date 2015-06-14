@@ -12,6 +12,10 @@
   copy: src=.zshrc dest={{ ansible_env.HOME }}/
   tags: shell
 
+- name: Set shellprofile file
+  copy: src=.zshprofile dest={{ ansible_env.HOME }}/
+  tags: shell
+
 - name: Be sure installed python3
   apt: name=python3,python3-setuptools state=present
   sudo: yes

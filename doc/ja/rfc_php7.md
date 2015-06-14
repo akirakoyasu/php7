@@ -34,46 +34,46 @@
 新しい比較演算子、<=>を提案する（2014-02-12作成、2015-01-19再開）
 
 **["foreach"の振る舞いを修正する](Fix_foreach_behavior.md)**  
-The RFC defines foreach statement behavior for the cases where is wasn't defined before and implementation provided inconsistent results. (Created 2015-01-29)
+従来定義されていないケースで、実装が一貫性のない結果となっていたforeach文の振る舞いを定義するRFC（2015-01-29作成）
 
-**[Removal of dead SAPIs and extensions]()**  
-Consideration about removing the unsupported SAPIs and extensions with unsupported dependencies.
+**[SAPIとエクステンションの削除](Removal_of_dead_SAPIs_and_extensions.md)**  
+依存先の非サポートに伴う非サポートSAPIとエクステンションの削除について検討
 
-**[Jsond]()**  
-Whether jsond should replace the current json extension. (Created 2015-01-11)
+**[Jsond](Jsond.md)**  
+jsondが現在のjsonエクステンションを置き換えるべきかどうか（2015-01-11作成）
 
-**[Preserve Fractional Part in JSON encode]()**  
-Adds a new option for JSON encode to preserve fractional part on float numbers.
+**[JSONエンコードで小数部分を保持する](Preserve_Fractional_Part_in_JSON_encode.md)**  
+JSONエンコードが浮動小数点数の小数部分を保持するための新しいオプションを追加する
 
-**[Return Type Declarations]()**  
-Adds return types to functions, methods and closures. (Created 2014-03-20)
+**[戻り値型の宣言](Return_Type_Declarations.md)**  
+関数、メソッド、クロージャに戻り値型を追加する（2014-03-20作成）
 
-**[Fast Parameter Parsing API]()**  
-Fast API in addition to zend_parse_parameters(). (Created 2014-05-23)
+**[パラメータをパースする高速なAPI](Fast_Parameter_Parsing_API.md)**  
+zend_parse_parameters()とは別の高速なAPI.（2014-05-23作成）
 
-**[Unicode Codepoint Escape Syntax]()**  
-Adds an escape sequence syntax for Unicode codepoints to string literals. (Created 2014-11-24)
+**[Unicode Codepoint Escape Syntax](Unicode_Codepoint_Escape_Syntax.md)**  
+文字列リテラルにUnicodeコードポイントのためのエスケープシーケンス構文を追加する（2014-11-24作成）
 
-**[Native TLS]()**  
-Native TLS for internal globals in TS mode
+**[ネイティブTLS](Native_TLS.md)**  
+TSモードでの内部グローバルのためのネイティブTLS
 
-**[Null Coalesce Operator]()**  
-Adds the coalesce operator, ??
+**[Null結合演算子](Null_Coalesce_Operator.md)**  
+結合演算子、??を追加する
 
-**[Integer Semantics]()**  
-Improves cross-platform consistency in PHP for some operations dealing with integers
+**[整数セマンティクス](Integer_Semantics.md)**  
+整数を扱ういくつかの演算で、PHPのクロスプラットフォーム一貫性を改善する
 
-**[ZPP Failure on Overflow]()**  
-Make zend_parse_parameters fail if a float value out of bounds, or NaN, is passed where an integer is expected. (Created 2014-09-22)
+**[オーバーフロー時ZPPを失敗させる](ZPP_Failure_on_Overflow.md)**  
+整数を期待している場所で範囲外の浮動小数点数や非数を渡された場合、zend_parse_parametersを失敗させる（2014-09-22作成）
 
-**[Move the phpng branch into master]()**  
-Embrace the phpng codebase as the basis for the future major version of PHP. (Created 2014-07-20)
+**[phpngブランチをmasterブランチへ移動する](Move_the_phpng_branch_into_master.md)**  
+phpngコードベースを将来のPHPメジャーバージョンの基礎として受け入れる（2014-07-20作成）
 
-**[Abstract Syntax Tree]()**  
-Proposes the introduction of an Abstract Syntax Tree (AST) as an intermediary structure in our compilation process.
+**[抽象構文木](Abstract_Syntax_Tree.md)**  
+コンパイル処理の仲介構造として抽象構文木の導入を提案する
 
-**[Uniform Variable Syntax]()**  
-Introduces an internally consistent and complete variable syntax.
+**[均一な変数構文](Uniform_Variable_Syntax.md)**  
+内部的に一貫した完全な変数構文を導入する
 
 **[64 bit platform improvements for string length and integer]()**  
 Integer and String modifications for full 64 bit support

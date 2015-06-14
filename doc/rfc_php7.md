@@ -36,43 +36,43 @@ Proposes a new comparison operator, <=> (Created 2014-02-12, revived 2015-01-19)
 **[Fix "foreach" behavior](Fix_foreach_behavior.md)**  
 The RFC defines foreach statement behavior for the cases where is wasn't defined before and implementation provided inconsistent results. (Created 2015-01-29)
 
-**[Removal of dead SAPIs and extensions]()**  
+**[Removal of dead SAPIs and extensions](Removal_of_dead_SAPIs_and_extensions.md)**  
 Consideration about removing the unsupported SAPIs and extensions with unsupported dependencies.
 
-**[Jsond]()**  
+**[Jsond](Jsond.md)**  
 Whether jsond should replace the current json extension. (Created 2015-01-11)
 
-**[Preserve Fractional Part in JSON encode]()**  
+**[Preserve Fractional Part in JSON encode](Preserve_Fractional_Part_in_JSON_encode.md)**  
 Adds a new option for JSON encode to preserve fractional part on float numbers.
 
-**[Return Type Declarations]()**  
+**[Return Type Declarations](Return_Type_Declarations.md)**  
 Adds return types to functions, methods and closures. (Created 2014-03-20)
 
-**[Fast Parameter Parsing API]()**  
+**[Fast Parameter Parsing API](Fast_Parameter_Parsing_API.md)**  
 Fast API in addition to zend_parse_parameters(). (Created 2014-05-23)
 
-**[Unicode Codepoint Escape Syntax]()**  
+**[Unicode Codepoint Escape Syntax](Unicode_Codepoint_Escape_Syntax.md)**  
 Adds an escape sequence syntax for Unicode codepoints to string literals. (Created 2014-11-24)
 
-**[Native TLS]()**  
+**[Native TLS](Native_TLS.md)**  
 Native TLS for internal globals in TS mode
 
-**[Null Coalesce Operator]()**  
+**[Null Coalesce Operator](Null_Coalesce_Operator.md)**  
 Adds the coalesce operator, ??
 
-**[Integer Semantics]()**  
+**[Integer Semantics](Integer_Semantics.md)**  
 Improves cross-platform consistency in PHP for some operations dealing with integers
 
-**[ZPP Failure on Overflow]()**  
+**[ZPP Failure on Overflow](ZPP_Failure_on_Overflow.md)**  
 Make zend_parse_parameters fail if a float value out of bounds, or NaN, is passed where an integer is expected. (Created 2014-09-22)
 
-**[Move the phpng branch into master]()**  
+**[Move the phpng branch into master](Move_the_phpng_branch_into_master.md)**  
 Embrace the phpng codebase as the basis for the future major version of PHP. (Created 2014-07-20)
 
-**[Abstract Syntax Tree]()**  
+**[Abstract Syntax Tree](Abstract_Syntax_Tree.md)**  
 Proposes the introduction of an Abstract Syntax Tree (AST) as an intermediary structure in our compilation process.
 
-**[Uniform Variable Syntax]()**  
+**[Uniform Variable Syntax](Uniform_Variable_Syntax.md)**  
 Introduces an internally consistent and complete variable syntax.
 
 **[64 bit platform improvements for string length and integer]()**  

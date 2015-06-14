@@ -121,3 +121,9 @@
   notify:
     - Restart php7_fpm
   tags: php7
+
+- name: Place ini file
+  copy: src=php7/php.ini dest={{ build_dir.path }}/lib/
+  notify:
+    - Restart php7_fpm
+  tags: php7
