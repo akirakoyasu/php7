@@ -75,59 +75,59 @@ Proposes the introduction of an Abstract Syntax Tree (AST) as an intermediary st
 **[Uniform Variable Syntax](Uniform_Variable_Syntax.md)**  
 Introduces an internally consistent and complete variable syntax.
 
-**[64 bit platform improvements for string length and integer]()**  
+**[64 bit platform improvements for string length and integer](64_bit_platform_improvements_for_string_length_and_integer.md)**  
 Integer and String modifications for full 64 bit support
 
-**[Closure::call]()**  
+**[Closure::call](Closure_call.md)**  
 Proposes a new method on the Closure class to allow calling bound to an object without pre-binding
 
-**[Fix list() behavior inconsistency]()**  
+**[Fix list() behavior inconsistency](Fix_list_behavior_inconsistency.md)**  
 Enable or disable string handling in list() operator
 
-**[Remove alternative PHP tags]()**  
+**[Remove alternative PHP tags](Remove_alternative_PHP_tags.md)**  
 Removes ASP and script tags
 
-**[switch.default.multiple]()**  
+**[switch.default.multiple](switch.default.multiple.md)**  
 Disallow multiple defaults in switch statements
 
-**[Catchable "call to a member function of a non-object"]()**  
+**[Catchable "call to a member function of a non-object"](Catchable_call_to_a_member_function_of_a_non-object.md)**  
 Turns this fatal error into E_RECOVERABLE (Created 2014-04-26)
 
-**[Filtered unserialize()]()**  
+**[Filtered unserialize()](Filtered_unserialize.md)**  
 Add option to ignore all or some objects to unserialize() (Created 2013/03/30)
 
-**[ICU IntlChar class]()**  
+**[ICU IntlChar class](ICU_IntlChar_class.md)**  
 Adds an IntlChar class an intl_char_*() functions to the Intl extension.
 
-**[Introduce session_start() INI options as array]()**  
+**[Introduce session_start() INI options as array](Introduce_session_start_INI_options_as_array.md)**  
 Introduce session_start() options
 
-**[Remove hex support in numeric strings]()**  
+**[Remove hex support in numeric strings](Remove_hex_support_in_numeric_strings.md)**  
 Removes support for hexadecimal numbers in numeric string conversions. (Created 2014-08-19)
 
-**[Expectations]()**  
+**[Expectations](Expectations.md)**  
 This RFC proposes adding BC zero-cost assertions. (Created 2013-11-01)
 
-**[Group Use Declarations]()**  
+**[Group Use Declarations](Group_Use_Declarations.md)**  
 The RFC adds improvements to current PHP namespace implementation by introducing group use declarations. (Created 2015-01-28)
 
-**[Exceptions in the engine]()**  
+**[Exceptions in the engine](Exceptions_in_the_engine.md)**  
 This RFC proposes to allow the use of exceptions in the engine. (Created 2014-09-30)
 
-**[Generator Return Expressions]()**  
+**[Generator Return Expressions](Generator_Return_Expressions.md)**  
 This RFC proposes the ability to specify and access return values from Generator functions
 
-**[Scalar Type Hints v0.5]()**  
+**[Scalar Type Hints v0.5](Scalar_Type_Hints_v0.5.md)**  
 This RFC proposes a mixed-mode scalar type system
 
-**[Continue output buffering]()**  
+**[Continue output buffering](Continue_output_buffering.md)**  
 Let the output buffer stack be usable despite an aborted connection
 
-**[intdiv()]()**  
+**[intdiv()](intdiv.md)**  
 This RFC proposes adding an intdiv() function for integer division. (Created 2014-07-15)
 
-**[Fix handling of custom session handler return values]()**  
+**[Fix handling of custom session handler return values](Fix_handling_of_custom_session_handler_return_values.md)**  
 Make false actually mean failure, not success.
 
-**[Turn gc_collect_cycles into function pointer]()**  
+**[Turn gc_collect_cycles into function pointer](Turn_gc_collect_cycles_into_function_pointer.md)**  
 Proposes to turn gc_collect_cycles into function pointer for extensions to hook into. (Created 2012-12-11)

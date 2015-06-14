@@ -51,7 +51,7 @@ JSONエンコードが浮動小数点数の小数部分を保持するための�
 **[パラメータをパースする高速なAPI](Fast_Parameter_Parsing_API.md)**  
 zend_parse_parameters()とは別の高速なAPI.（2014-05-23作成）
 
-**[Unicode Codepoint Escape Syntax](Unicode_Codepoint_Escape_Syntax.md)**  
+**[Unicodeコードポイントのエスケープ構文](Unicode_Codepoint_Escape_Syntax.md)**  
 文字列リテラルにUnicodeコードポイントのためのエスケープシーケンス構文を追加する（2014-11-24作成）
 
 **[ネイティブTLS](Native_TLS.md)**  
@@ -75,59 +75,59 @@ phpngコードベースを将来のPHPメジャーバージョンの基礎とし
 **[均一な変数構文](Uniform_Variable_Syntax.md)**  
 内部的に一貫した完全な変数構文を導入する
 
-**[64 bit platform improvements for string length and integer]()**  
-Integer and String modifications for full 64 bit support
+**[64ビットプラットフォームの文字列の長さと整数の改善](64_bit_platform_improvements_for_string_length_and_integer.md)**  
+64ビットをフルサポートする整数と文字列の変更
 
-**[Closure::call]()**  
-Proposes a new method on the Closure class to allow calling bound to an object without pre-binding
+**[Closure::call](Closure_call.md)**  
+事前バインドなしにオブジェクトをバインドして呼び出すための、Closureクラスの新しいメソッドを提案する
 
-**[Fix list() behavior inconsistency]()**  
-Enable or disable string handling in list() operator
+**[list()の一貫性のない振る舞いを修正する](Fix_list_behavior_inconsistency.md)**  
+list()演算子で文字列の操作を可能にする、あるいは不可能にする
 
-**[Remove alternative PHP tags]()**  
-Removes ASP and script tags
+**[PHPの代替タグを削除する](Remove_alternative_PHP_tags.md)**  
+ASP形式とscript形式のタグを削除する
 
-**[switch.default.multiple]()**  
-Disallow multiple defaults in switch statements
+**[switch.default.multiple](switch.default.multiple.md)**  
+switch文で複数のdefaultを許可しない
 
-**[Catchable "call to a member function of a non-object"]()**  
-Turns this fatal error into E_RECOVERABLE (Created 2014-04-26)
+**["call to a member function of a non-object"をキャッチできるようにする](Catchable_call_to_a_member_function_of_a_non-object.md)**  
+この致命的なエラーをE_RECOVERABLEに変更する（2014-04-26作成）
 
-**[Filtered unserialize()]()**  
-Add option to ignore all or some objects to unserialize() (Created 2013/03/30)
+**[フィルタされたunserialize()](Filtered_unserialize.md)**  
+全て、あるいはいくつかのオブジェクトを無視するオプションをunserialize()に追加する（2013/03/30作成）
 
-**[ICU IntlChar class]()**  
-Adds an IntlChar class an intl_char_*() functions to the Intl extension.
+**[ICU IntlCharクラス](ICU_IntlChar_class.md)**  
+IntlエクステンションにIntlCharクラス、intl_char_*()関数を追加する
 
-**[Introduce session_start() INI options as array]()**  
-Introduce session_start() options
+**[session_start()のINIオプションを配列として導入する](Introduce_session_start_INI_options_as_array.md)**  
+session_start()のオプションを導入する
 
-**[Remove hex support in numeric strings]()**  
-Removes support for hexadecimal numbers in numeric string conversions. (Created 2014-08-19)
+**[数値文字列の16進数サポートを削除する](Remove_hex_support_in_numeric_strings.md)**  
+数値文字列の変換で16進数のサポートを削除する（2014-08-19作成）
 
-**[Expectations]()**  
-This RFC proposes adding BC zero-cost assertions. (Created 2013-11-01)
+**[Expectations](Expectations.md)**  
+このRFCは、後方互換性がありコストのないアサーションを追加することを提案する（2013-11-01作成）
 
-**[Group Use Declarations]()**  
-The RFC adds improvements to current PHP namespace implementation by introducing group use declarations. (Created 2015-01-28)
+**[use宣言をまとめる](Group_Use_Declarations.md)**  
+このRFCは、use宣言をまとめられるようにすることで、現在のPHPの名前空間の実装を改善する（2015-01-28作成）
 
-**[Exceptions in the engine]()**  
-This RFC proposes to allow the use of exceptions in the engine. (Created 2014-09-30)
+**[エンジンでの例外](Exceptions_in_the_engine.md)**  
+このRFCはエンジンで例外を使用できるようにすることを提案する（2014-09-30作成）
 
-**[Generator Return Expressions]()**  
-This RFC proposes the ability to specify and access return values from Generator functions
+**[ジェネレータのreturn式](Generator_Return_Expressions.md)**  
+このRFCはジェネレータ関数から戻り値を指定し、それにアクセス可能にすることを提案する
 
-**[Scalar Type Hints v0.5]()**  
-This RFC proposes a mixed-mode scalar type system
+**[スカラ型のタイプヒントv0.5](Scalar_Type_Hints_v0.5.md)**  
+このRFCはモードを混合できるスカラ型システムを提案する
 
-**[Continue output buffering]()**  
-Let the output buffer stack be usable despite an aborted connection
+**[出力バッファリングを継続する](Continue_output_buffering.md)**  
+接続が中断しても出力バッファスタックを使用できるようにする
 
-**[intdiv()]()**  
-This RFC proposes adding an intdiv() function for integer division. (Created 2014-07-15)
+**[intdiv()](intdiv.md)**  
+このRFCは整数の除算のためのintdiv()関数を追加することを提案する（2014-07-15作成）
 
-**[Fix handling of custom session handler return values]()**  
-Make false actually mean failure, not success.
+**[カスタムセッションハンドラの戻り値の処理を修正する](Fix_handling_of_custom_session_handler_return_values.md)**  
+falseが実際に成功ではなく失敗を意味するようにする
 
-**[Turn gc_collect_cycles into function pointer]()**  
-Proposes to turn gc_collect_cycles into function pointer for extensions to hook into. (Created 2012-12-11)
+**[gc_collect_cyclesを関数ポインタにする](Turn_gc_collect_cycles_into_function_pointer.md)**  
+gc_collect_cyclesを、エクステンションがフックできる関数ポインタに変更することを提案する（2012-12-11作成）
