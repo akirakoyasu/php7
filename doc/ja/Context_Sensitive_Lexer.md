@@ -5,42 +5,44 @@
   * Status: Implemented (in PHP 7.0)
   * First Published at: http://wiki.php.net/rfc/context_sensitive_lexer
 
-===== Introduction =====
+===== 導入 =====
 
-PHPには現在 **64** のグローバルな予約語がある。
+PHPには現在**64**のグローバルな予約語がある。
 まれでなく、これらの予約語は合法なユーザ空間のAPI宣言と衝突することになる。
-このRFCは、 **半予約語** をサポートする **文脈依存の字句解析** を導入する極小の変更を加えることで、この問題に対する部分的な解決策を提案する。
+このRFCは、**半予約語**をサポートする**文脈依存の字句解析**を導入する極小の変更を加えることで、この問題に対する部分的な解決策を提案する。
 
 例えば、このRFCが受け入れられれば、以下のようなコードが可能になるだろう。
 
-<code php>
+```php
 class Collection {
     public function forEach(callable $callback) { /* */ }
     public function list() { /* */ }
 }
+```
 
-</code>
+現在は以下の構文エラーなしに ''foreach'' や ''list'' というメソッドを宣言することは**不可能**であることに注意してほしい。
 
-Notice that it's currently **not** possible to have the ''foreach'' and ''list'' method declared without having a syntax error:
-
+<pre>
   PHP Parse error: Syntax error, unexpected T_FOREACH, expecting T_STRING on line 2
   PHP Parse error: Syntax error, unexpected T_LIST, expecting T_STRING on line 3
+</pre>
 
-===== Proposal =====
+===== 提案 =====
 
-This RFC revisits the topic of [[https://wiki.php.net/rfc/keywords_as_identifiers|Keywords as Identifiers]] RFC. But this time
-presenting a minimal and maintainable [[https://github.com/marcioAlmada/php-src/commit/d9d6f0c7e325dcd0d0ff3c3f2dc73c2364c3ad5f|patch]],
-restricted to OO scope only, consistently comprehending:
+このRFCは[Keywords as Identifiers：キーワードと識別子）](https://wiki.php.net/rfc/keywords_as_identifiers|Keywords as Identifiers)
+RFCの話題に再訪する。が、今回はOOのスコープのみに限定し、極小でメンテンナンス可能な[パッチ](https://github.com/marcioAlmada/php-src/commit/d9d6f0c7e325dcd0d0ff3c3f2dc73c2364c3ad5f)を
+示す。これは一貫性のため以下を含む：
 
-  * Properties, constants and methods defined on classes, interfaces and traits
-  * Access of properties, constants and methods from objects and classes
+  * クラスに定義されたプロパティ、定数、メソッド、インターフェースとトレイト
+  * オブジェクトとクラスからプロパティ、定数、メソッドへのアクセス
 
-The proposed changes could be especially useful to:
+提案する変更は特に以下の効果を見込む：
 
-  - Reduce the surface of BC breaks whenever new keywords are introduced
-  - Avoid restricting userland APIs. Dispensing the need for hacks like unnecessary magic method calls, prefixed identifiers or the usage of a [[http://en.wikipedia.org/wiki/Thesaurus|thesaurus]] to avoid naming conflicts.
+  1. 新しいキーワードが導入される際につきものの後方互換性を破壊するリスクを減らす
+  1. ユーザ空間のAPIを制限することを避ける。不要なマジックメソッド呼び出しや、接頭辞付きの識別子や、命名の衝突をさけるために類義語辞典を使う
+     ようなハックの必要をなくす
 
-This is a list of currently **globally** reserved words that will become **semi-reserved** in case proposed change gets approved:
+これは、提案する変更が承認された場合に**半予約語**となる現在は**グローバルな**予約語の一覧である。
 
   callable  class  trait  extends  implements  static  abstract  final  public  protected  private  const
   enddeclare  endfor  endforeach  endif  endwhile  and  global  goto  instanceof  insteadof  interface
@@ -48,31 +50,31 @@ This is a list of currently **globally** reserved words that will become **semi-
   print  echo  require  require_once  return  else  elseif  default  break  continue  switch  yield
   function  if  endswitch  finally  for  foreach  declare  case  do  while  as  catch  die  self parent
 
-==== Limitations ====
+==== 制約 ====
 
-On purpose, it's still forbidden to define a **class constant** named as ''class'' because of the class name resolution ''::class'':
+意図的に、''::class''によるクラス名解決のため''class''という名前で**クラス定数**を定義することは依然として禁止する：
 
-<code php>
+```php
 class Foo {
   const class = 'Foo'; // Fatal error
 }
 
 // Fatal error: Cannot redefine class constant Foo::CLASS as it is reserved in %s on line %d
-</code>
+```
 
-In practice, it means that we would drop from **64** to only **1** reserved word that affects only class constant names.
+実際のところ、これはクラス定数の名前のみに影響する予約語を**64個**からわずか**1個**へ減らすことを意味する。
 
-''class|object'' properties **can** have any name because PHP has sigils and code like the following has always been allowed:
+PHPでは以下のような記法とコードが常に許されるため、''class|object''プロパティはどのような名前でも良い：
 
-<code php>
+```php
 class Foo {
   public $list = 'list';
 }
 
 (new Foo)->list;
-</code>
+```
 
-===== Practical Examples =====
+===== 実際的な例 =====
 
 Some practical examples related to the impact this RFC could have on user space code: 
 

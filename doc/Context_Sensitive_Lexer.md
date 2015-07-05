@@ -14,23 +14,24 @@ with support for **semi-reserved** words.
 
 For instance, if the RFC gets accepted, code like the following would become possible:
 
-<code php>
+```php
 class Collection {
     public function forEach(callable $callback) { /* */ }
     public function list() { /* */ }
 }
-
-</code>
+```
 
 Notice that it's currently **not** possible to have the ''foreach'' and ''list'' method declared without having a syntax error:
 
+<pre>
   PHP Parse error: Syntax error, unexpected T_FOREACH, expecting T_STRING on line 2
   PHP Parse error: Syntax error, unexpected T_LIST, expecting T_STRING on line 3
+</pre>
 
 ===== Proposal =====
 
-This RFC revisits the topic of [[https://wiki.php.net/rfc/keywords_as_identifiers|Keywords as Identifiers]] RFC. But this time
-presenting a minimal and maintainable [[https://github.com/marcioAlmada/php-src/commit/d9d6f0c7e325dcd0d0ff3c3f2dc73c2364c3ad5f|patch]],
+This RFC revisits the topic of [Keywords as Identifiers](https://wiki.php.net/rfc/keywords_as_identifiers) RFC. But this time
+presenting a minimal and maintainable [patch](https://github.com/marcioAlmada/php-src/commit/d9d6f0c7e325dcd0d0ff3c3f2dc73c2364c3ad5f),
 restricted to OO scope only, consistently comprehending:
 
   * Properties, constants and methods defined on classes, interfaces and traits
@@ -39,7 +40,8 @@ restricted to OO scope only, consistently comprehending:
 The proposed changes could be especially useful to:
 
   - Reduce the surface of BC breaks whenever new keywords are introduced
-  - Avoid restricting userland APIs. Dispensing the need for hacks like unnecessary magic method calls, prefixed identifiers or the usage of a [[http://en.wikipedia.org/wiki/Thesaurus|thesaurus]] to avoid naming conflicts.
+  - Avoid restricting userland APIs. Dispensing the need for hacks like unnecessary magic method calls, prefixed identifiers
+    or the usage of a [thesaurus](http://en.wikipedia.org/wiki/Thesaurus) to avoid naming conflicts.
 
 This is a list of currently **globally** reserved words that will become **semi-reserved** in case proposed change gets approved:
 
@@ -53,25 +55,25 @@ This is a list of currently **globally** reserved words that will become **semi-
 
 On purpose, it's still forbidden to define a **class constant** named as ''class'' because of the class name resolution ''::class'':
 
-<code php>
+```php
 class Foo {
   const class = 'Foo'; // Fatal error
 }
 
 // Fatal error: Cannot redefine class constant Foo::CLASS as it is reserved in %s on line %d
-</code>
+```
 
 In practice, it means that we would drop from **64** to only **1** reserved word that affects only class constant names.
 
 ''class|object'' properties **can** have any name because PHP has sigils and code like the following has always been allowed:
 
-<code php>
+```php
 class Foo {
   public $list = 'list';
 }
 
 (new Foo)->list;
-</code>
+```
 
 ===== Practical Examples =====
 
