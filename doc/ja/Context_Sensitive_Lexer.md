@@ -145,17 +145,17 @@ class HTTP {
 }
 ```
 
-===== Impact On Other RFCs =====
+===== 他のRFCへの影響 =====
 
-Some RFCs are proposing to reserve new keywords in order to add features or reserve typehints names:
+いくつかのRFCが、機能の追加やタイプヒント名の予約のために、新しい予約語を提案している。
 
   * https://wiki.php.net/rfc/in_operator
   * https://wiki.php.net/rfc/reserve_more_types_in_php_7
   * https://wiki.php.net/rfc/reserve_even_more_types_in_php_7
 
-With the approval of the current RFC, BC breaks surface would be much smaller in such cases.
+このRFCの承認によって、このようなケースで後方互換性を破壊するリスクはかなり小さくなるだろう。
 
-One notable example is the **in** operator RFC. Without a context sensitive lexer, proposed here, the new operator would create a BC break on **Doctrine** library and pretty much many other SQL writers or ORMs out there:
+一つの重要な例は**in**演算子のRFCである。ここで提案する文脈依存の字句解析なしでは、新しい演算子は以下に示すような**Doctrine**ライブラリやその他多くのSQLライタ、またはORMの後方互換性を破壊することになるだろう：
 
 https://github.com/doctrine/doctrine2/blob/master/lib/Doctrine/ORM/Query/Expr.php#L443
 
@@ -167,7 +167,7 @@ The lexer now keeps track of the context needed to have unreserved words on OO s
 
 For instance, the lexing rules to disambiguate ''::class'' (class name resolution operator) from a ''class constant'' or ''static method'' access is:
 
-<code c++>
+```c++
 <ST_IN_SCRIPTING>"::"/{OPTIONAL_WHITESPACE}"class" {
   return T_PAAMAYIM_NEKUDOTAYIM;
 }
@@ -176,16 +176,16 @@ For instance, the lexing rules to disambiguate ''::class'' (class name resolutio
   yy_push_state(ST_LOOKING_FOR_SEMI_RESERVED_NAME);
   return T_PAAMAYIM_NEKUDOTAYIM;
 }
-</code>
+```
 
 A few additional compile time check were created:
 
-<code c>
+```c
 if(ZEND_NOT_RESERVED != zend_check_reserved_method_name(decl->name)) {
   zend_error_noreturn(E_COMPILE_ERROR,
     "Cannot use '%s' as class method name as it is reserved", decl->name->val);
 }
-</code>
+```
 
 ==== Patch 2 ====
 
@@ -200,13 +200,13 @@ The new patch just requires the maintenance of a single inclusive parser rule li
 
 In order to send information to the lexer about the context change, we just have to use ''identifier'' instead of ''T_STRING'' when applicable. For instance this is the needed changes on the parser grammar to allow semi reserved words on method names:
 
-<code c>
+```c
 // before
 method_modifiers function returns_ref T_STRING '(' parameter_list ')' //...
 
 // after
 method_modifiers function returns_ref identifier '(' parameter_list ')' //...
-</code>
+```
 
 ===== Future Work And Maintenance =====
 
