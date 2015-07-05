@@ -33,7 +33,7 @@ class Collection {
 RFCの話題に再訪する。が、今回はOOのスコープのみに限定し、極小でメンテンナンス可能な[パッチ](https://github.com/marcioAlmada/php-src/commit/d9d6f0c7e325dcd0d0ff3c3f2dc73c2364c3ad5f)を
 示す。これは一貫性のため以下を含む：
 
-  * クラスに定義されたプロパティ、定数、メソッド、インターフェースとトレイト
+  * クラスに定義されたプロパティ、定数、メソッド、インタフェースとトレイト
   * オブジェクトとクラスからプロパティ、定数、メソッドへのアクセス
 
 提案する変更は特に以下の効果を見込む：
@@ -76,13 +76,14 @@ class Foo {
 
 ===== 実際的な例 =====
 
-Some practical examples related to the impact this RFC could have on user space code: 
+このRFCがユーザ空間のコードに与える影響に関連する、いくつかの実際的な例：
 
+提案する変更が承認された場合、APIのようにユーザ空間の流れるインタフェースやDSLの自由度が高くなる。
 The proposed change, if approved, gives more freedom to userland fluent interfaces or DSL like APIs.
 
-<code php>
-// the following example works with patch
-// but currently fails because 'for', 'and', 'or', 'list' are globally reserved words:
+```php
+// 以下の例はパッチを当てれば動作するが、
+// 現在は'for', 'and', 'or', 'list'がグローバルな予約語であるため失敗する：
 
 $projects =
     Finder::for('project')
@@ -91,11 +92,11 @@ $projects =
         ->or('code')->in(['4', '5', '7'])
         ->and()->not('created_at')->between([$time1, $time2])
         ->list($limit, $offset);
-</code>
+```
 
-<code php>
-// the following example works with the patch
-// but currently fails because 'foreach', 'list' and 'new' are globally reserved words:
+```php
+// 以下の例はパッチを当てれば動作するが、
+// 現在は'foreach', 'list' and 'new'がグローバルな予約語であるため失敗する：
 
 class Collection extends \ArrayAccess, \Countable, \IteratorAggregate {
 
@@ -115,13 +116,13 @@ class Collection extends \ArrayAccess, \Countable, \IteratorAggregate {
 Collection::new(['foo', 'bar'])->forEach(function($index, $item){
   /* callback */
 })->list();
-</code>
+```
 
-Globally reserved words end up limiting userland implementations on being the most expressive and semantic as possible:
+グローバルな予約語は、可能な限り最も表現豊かで意味論的であろうとするユーザ空間の実装を、結果的に制限していることになる：
 
-<code php>
-// the following example works with the patch
-// but currently fails because 'include' is a globally reserved word:
+```php
+// 以下の例はパッチを当てれば動作するが、
+// 現在は'include'がグローバルな予約語であるため失敗する：
 
 class View {
     public function include(View $view) {
@@ -131,18 +132,18 @@ class View {
 
 $viewA = new View('a.view');
 $viewA->include(new View('b.view'));
-</code>
+```
 
-Sometimes there is simply no better name for a class constant. One might want to define an HTTP agent class and would like to have some HTTP status constants:
+ときに、単にクラス定数としてより良い名前がないこともある。HTTPエージェントクラスを定義しようとする、いくつかのHTTPステータス定数を使いたいかもしれない：
 
-<code php>
+```php
 class HTTP {
-    const CONTINUE = 100; // works with patch
-                          // but currently fails because 'continue' is a globally reserved word
+    const CONTINUE = 100; // パッチを当てれば動作するが、
+                          // 現在は'continue'がグローバルな予約語であるため失敗する
     const SWITCHING_PROTOCOLS = 101;
     /* ... */
 }
-</code>
+```
 
 ===== Impact On Other RFCs =====
 

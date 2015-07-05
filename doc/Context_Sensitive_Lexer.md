@@ -81,7 +81,7 @@ Some practical examples related to the impact this RFC could have on user space 
 
 The proposed change, if approved, gives more freedom to userland fluent interfaces or DSL like APIs.
 
-<code php>
+```php
 // the following example works with patch
 // but currently fails because 'for', 'and', 'or', 'list' are globally reserved words:
 
@@ -92,9 +92,9 @@ $projects =
         ->or('code')->in(['4', '5', '7'])
         ->and()->not('created_at')->between([$time1, $time2])
         ->list($limit, $offset);
-</code>
+```
 
-<code php>
+```php
 // the following example works with the patch
 // but currently fails because 'foreach', 'list' and 'new' are globally reserved words:
 
@@ -116,11 +116,11 @@ class Collection extends \ArrayAccess, \Countable, \IteratorAggregate {
 Collection::new(['foo', 'bar'])->forEach(function($index, $item){
   /* callback */
 })->list();
-</code>
+```
 
 Globally reserved words end up limiting userland implementations on being the most expressive and semantic as possible:
 
-<code php>
+```php
 // the following example works with the patch
 // but currently fails because 'include' is a globally reserved word:
 
@@ -132,18 +132,18 @@ class View {
 
 $viewA = new View('a.view');
 $viewA->include(new View('b.view'));
-</code>
+```
 
 Sometimes there is simply no better name for a class constant. One might want to define an HTTP agent class and would like to have some HTTP status constants:
 
-<code php>
+```php
 class HTTP {
     const CONTINUE = 100; // works with patch
                           // but currently fails because 'continue' is a globally reserved word
     const SWITCHING_PROTOCOLS = 101;
     /* ... */
 }
-</code>
+```
 
 ===== Impact On Other RFCs =====
 
