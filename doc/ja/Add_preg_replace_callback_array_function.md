@@ -6,8 +6,12 @@
   * First Published at: https://wiki.php.net/rfc/preg_replace_callback_array
 
 ===== Introduction =====
-Before 5.5.0, we can use the '/e' modifier. Here is a piece of code with 5.4.x:
-<code php Zend/zend_vm_gen.php>
+
+5.5.0以前、我々は'/e'修飾子を使用することができた。5.4.xでのコードがこれだ：
+
+```php
+Zend/zend_vm_gen.php
+
 $code = preg_replace(
                 array(
                     "/EXECUTE_DATA/m",
@@ -22,10 +26,12 @@ $code = preg_replace(
                     "'return '.helper_name('\\1',$spec,'$op1','$op2').'(\\2, ZEND_OPCODE_HANDLER_ARGS_PASSTHRU);'",
                 ),
                 $code);
-</code>
+```
 
-Since 5.5.0, we deprecated the /e modifier, so we have to change it to:
-<code php Zend/zend_vm_gen.php>
+5.5.0以降、我々は /e 修飾子を非推奨としたため、このように変更する必要がある：
+```php
+Zend/zend_vm_gen.php
+
 $code = preg_replace_callback(
     array(
         "/EXECUTE_DATA/m",
@@ -44,17 +50,23 @@ $code = preg_replace_callback(
 	    return "return " . helper_name($matches[1], $spec, $op1, $op2) . "(ZEND_OPCODE_HANDLER_ARGS_PASSTHRU)";
         }
     }, $code);
-</code>
+```
 
-===== Proposal =====
-The preg_replace_callback_array function is an extension to preg_replace_callback. With the function, each pattern can easily have a specific callback.
+===== 提案 =====
 
-This is the best way to implement when there are multiple patterns.
+preg_replace_callback_array関数はpreg_replace_callbackの拡張である。この関数を使えば、それぞれのパターンに
+容易にあるコールバックを持たせられる。
 
-With preg_replace_callback_array, the code is more readable, and full of logic. There is less crazy branch determination.
+これは複数のパターンがあるときの最適な実装方法である。
 
-With the preg_replace_callback_array function, the code is:
-<code php Zend/zend_vm_gen.php>
+preg_replace_callback_arrayによって、コードはより読みやすくなり、ロジックで満たされる。
+おかしな分岐の解決はより少なくなる。
+
+preg_replace_callback_arrayを使えば、コードはこのようになる：
+
+```php
+Zend/zend_vm_gen.php
+
 $code = preg_replace_callback_array(
 	array(
 		"/EXECUTE_DATA/m" => function($matches) {
@@ -70,21 +82,26 @@ $code = preg_replace_callback_array(
 			return "return " . helper_name($matches[1], $spec, $op1, $op2) . "(" . $matches[2]. ", ZEND_OPCODE_HANDLER_ARGS_PASSTHRU);";
 		},
 	), $code);
-</code>
+```
 
-The first parameter is an array in this function. In this parameter, Key is pattern, and value is callback. Subject will iterate and match each key. If it is matched, the callback will be called. In the meanwhile, the result will be the new subject and passed to the next match.
-
+この関数の1番目の引数は配列である。この引数のうち、キーがパターンであり、値がコールバックである。
+対象は繰り返しそれぞれのキーにマッチするか検査される。もしマッチすれば、コールバックが呼ばれる。その間に、
+結果が新しい対象として次の検査に渡される。
 
 ===== Proposed PHP Version(s) =====
+
 This is proposed for PHP7
 
 ===== Unaffected PHP Functionality =====
+
 preg_filter(), preg_replace(), preg_replace_callback() will stay the same.
 
 ===== Proposed Voting Choices =====
+
 Include these so readers know where you are heading and can discuss the proposed voting options.
 
 State whether this project requires a 2/3 or 50%+1 majority (see [[voting]])
 
 ===== Patches and Tests =====
+
 Currently implemented on https://github.com/php/php-src/pull/1171
