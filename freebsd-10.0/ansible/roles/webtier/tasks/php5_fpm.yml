@@ -1,0 +1,41 @@
+
+- name: Place rc script
+  copy: src=php5-fpm/php5_fpm dest=/usr/local/etc/rc.d/php5_fpm mode="u=rwx,g=rx,o=rx"
+  sudo: yes
+  tags:
+    - php5
+    - php-fpm
+
+- name: Place fpm configuration file
+  copy: src=php5-fpm/php-fpm.conf dest=/home/vagrant/php5/etc/php-fpm.conf
+  notify:
+    - Restart php5_fpm
+  tags:
+    - php5
+    - php-fpm
+
+- name: Be sure service php5_fpm enabled and started
+  service: name=php5_fpm enabled=yes state=started
+  sudo: yes
+  tags:
+    - php5
+    - php-fpm
+
+- name: Place nginx configuration file
+  copy: src=nginx/nginx.conf dest=/usr/local/etc/nginx/
+  sudo: yes
+  notify:
+    - Restart nginx
+  tags:
+    - php5
+    - php-fpm
+
+- name: Place script file
+  copy: src={{ item }} dest=/usr/local/www/html/
+  sudo: yes
+  tags:
+    - php5
+    - php-fpm
+  with_items:
+    - www/index.php5
+    - www/bench.php5

@@ -1,0 +1,45 @@
+### .tcsh
+
+# Source global definitions
+if ( -f /etc/csh.login ) then
+source /etc/csh.login
+endif
+
+# Source complete definitions
+if ( -f $HOME/.complete ) then
+source $HOME/.complete
+endif
+
+setenv LANG "ja_JP.UTF-8"
+setenv EDITOR "vi"
+
+set colors
+
+bindkey -e
+
+set prompt="%{[33m%}$LOGNAME@%m:%{[m%} % "
+set rprompt="[%{[33m%}%~%{[m%}]"
+set history=5000
+set savehist=(5000 merge)
+
+set autolist=ambiguous
+set complete=enhance
+set autoexpand
+
+set savedirs
+
+set colorcat
+
+set implicitcd=verbose
+
+bindkey "^R" i-search-back
+bindkey "^S" i-search-fwd
+
+bindkey "^[i" complete-word-fwd
+bindkey "^[I" complete-word-back
+
+alias rm rm -i
+alias cp cp -i
+alias mv mv -i
+
+alias ls ls -G -F

@@ -1,0 +1,20 @@
+
+- name: Be sure installed redis
+  pkgng: name=redis state=present
+  sudo: yes
+  tags: redis
+
+- name: Be sure service redis enabled and started
+  service: name=redis enabled=yes state=started
+  sudo: yes
+  tags: redis
+
+- name: Be sure installed mysql
+  pkgng: name=mysql56-server state=present
+  sudo: yes
+  tags: mysql
+
+- name: Be sure service mysql enabled and started
+  service: name=mysql-server enabled=yes state=started
+  sudo: yes
+  tags: mysql

@@ -1,0 +1,10 @@
+
+- name: Be sure installed redis
+  apt: name=redis-server state=present
+  sudo: yes
+  tags: redis
+
+- name: Be sure installed mysql
+  apt: name=mysql-server-5.6 state=present
+  sudo: yes
+  tags: mysql

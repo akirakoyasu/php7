@@ -1,0 +1,88 @@
+
+- name: Stop service for clean build
+  service: name=php5_fpm state=stopped
+  sudo: yes
+  ignore_errors: yes
+  when: php5_clean_build
+  tags: php5
+
+- name: Clean build
+  file: path={{ ansible_env.HOME }}/php5 state=absent
+  when: php5_clean_build
+  tags: php5
+
+- name: Be sure build dir
+  file: path={{ ansible_env.HOME }}/php5 state=directory
+  register: build_dir
+  tags: php5
+
+- name: Download PHP
+  get_url: url=http://jp1.php.net/get/{{ php5_version }}.tar.bz2/from/this/mirror
+    dest={{ build_dir.path }}/{{ php5_version }}.tar.bz2
+  tags: php5
+
+# unavailable unarchive from bug https://github.com/ansible/ansible/issues/6723
+- name: Unpack tarball
+  command: tar xvfj {{ build_dir.path }}/{{ php5_version }}.tar.bz2
+    chdir={{ build_dir.path }}
+    creates={{ build_dir.path }}/{{ php5_version }}/
+  tags: php5
+
+- name: Configure PHP
+  command: >
+    ./configure
+    --prefix={{ build_dir.path }}
+    --enable-fpm
+    --enable-mbstring
+    --enable-zip
+    --enable-bcmath
+    --enable-pcntl
+    --enable-ftp
+    --enable-exif
+    --enable-calendar
+    --enable-sysvmsg
+    --enable-sysvsem
+    --enable-sysvshm
+    --enable-wddx
+    --with-curl
+    --with-mcrypt
+    --with-iconv
+    --with-gmp
+    --with-pspell
+    --with-gd
+    --with-jpeg-dir=/usr/local
+    --with-png-dir=/usr/local
+    --with-zlib-dir=/usr/local
+    --with-xpm-dir=/usr/local
+    --with-freetype-dir=/usr/local
+    --with-t1lib
+    --enable-gd-native-ttf
+    --enable-gd-jis-conv
+    --with-openssl
+    --with-pdo-mysql
+    --with-gettext
+    --with-zlib
+    --with-bz2
+    --with-recode
+    --with-mysqli
+    --with-readline
+    chdir={{ build_dir.path }}/{{ php5_version }}
+    creates={{ build_dir.path }}/{{ php5_version }}/Makefile
+  tags: php5
+
+- name: Build PHP
+  shell: >
+    make clean &&
+    make
+    chdir={{ build_dir.path }}/{{ php5_version }}
+    creates={{ build_dir.path }}/{{ php5_version }}/sapi/cli/php
+  tags: php5
+
+- name: Install PHP
+  command: >
+    make install
+    chdir={{ build_dir.path }}/{{ php5_version }}
+    creates={{ build_dir.path }}/bin/php
+  notify:
+    - Restart php5_fpm
+  tags: php5

@@ -1,0 +1,24 @@
+
+- name: Change default shell
+  user: name={{ ansible_user_id }} shell=/bin/tcsh
+  sudo: yes
+  tags: shell
+
+- name: Set shellrc file
+  copy: src=.tcshrc dest={{ ansible_env.HOME }}/
+  tags: shell
+
+- name: Be sure installed python3
+  pkgng: name=python3,py34-setuptools34 state=present
+  sudo: yes
+  tags: python
+
+- name: Be sure installed pip
+  easy_install: name=pip executable=easy_install-3.4
+  sudo: yes
+  tags: python
+
+- name: Be sure installed utilities
+  pkgng: name=topless state=present
+  sudo: yes
+  tags: shell

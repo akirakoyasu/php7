@@ -1,0 +1,40 @@
+#!/bin/sh
+#
+# Startup script for php-fpm on FreeBSD
+#
+# This goes in /usr/local/etc/rc.d and gets run at boot-time.
+
+# PROVIDE:
+# REQUIRE:
+# KEYWORD: shutdown
+
+#
+# Add the following lines to /etc/rc.conf to enable php-fpm:
+#
+#php7_fpm_enable="YES"
+#
+
+. /etc/rc.subr
+
+prefix=/home/vagrant/php7
+exec_prefix=${prefix}
+php_fpm_BIN=${exec_prefix}/sbin/php-fpm
+php_fpm_CONF=${prefix}/etc/php-fpm.conf
+php_fpm_PID=${prefix}/var/run/php-fpm.pid
+php_opts="--fpm-config $php_fpm_CONF --pid $php_fpm_PID"
+
+# rc script manner
+name="php7_fpm"
+rcvar="${name}_enable"
+start_cmd="${name}_start"
+command=${php_fpm_BIN}
+pidfile=${php_fpm_PID}
+
+php7_fpm_start()
+{
+    echo "Starting ${name}"
+    $php_fpm_BIN --daemonize $php_opts
+}
+
+load_rc_config $name
+run_rc_command "$1"

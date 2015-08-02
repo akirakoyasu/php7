@@ -1,0 +1,104 @@
+
+- name: Be sure installed git
+  pkgng: name=git state=present
+  sudo: yes
+  tags: php7
+
+- name: Be sure installed packages need to build php7
+  pkgng: name=autoconf,bison state=present
+  sudo: yes
+  tags: php7
+
+- name: Be sure installed packages optional to build php7
+  pkgng: name=jpeg,png,t1lib,libmcrypt,aspell,recode,readline state=present
+  sudo: yes
+  tags: php7
+
+- name: Stop service for clean build
+  service: name=php7_fpm state=stopped
+  sudo: yes
+  ignore_errors: yes
+  when: php7_clean_build
+  tags: php7
+
+- name: Clean build
+  file: path={{ ansible_env.HOME }}/php7 state=absent
+  when: php7_clean_build
+  tags: php7
+
+- name: Be sure build dir
+  file: path={{ ansible_env.HOME }}/php7 state=directory
+  register: build_dir
+  tags: php7
+
+- name: Clone PHP repo
+  git: repo=https://git.php.net/repository/php-src.git
+       dest={{ build_dir.path }}/php-src
+       depth=1
+  tags: php7
+
+- name: Build Configure PHP
+  command: >
+    ./buildconf
+    chdir={{ build_dir.path }}/php-src
+    creates={{ build_dir.path }}/php-src/configure
+  tags: php7
+
+- name: Configure PHP
+  command: >
+    ./configure
+    --prefix={{ build_dir.path }}
+    --enable-fpm
+    --enable-mbstring
+    --enable-zip
+    --enable-bcmath
+    --enable-pcntl
+    --enable-ftp
+    --enable-exif
+    --enable-calendar
+    --enable-sysvmsg
+    --enable-sysvsem
+    --enable-sysvshm
+    --enable-wddx
+    --with-curl
+    --with-mcrypt
+    --with-iconv
+    --with-gmp
+    --with-pspell
+    --with-gd
+    --with-jpeg-dir=/usr/local
+    --with-png-dir=/usr/local
+    --with-zlib-dir=/usr/local
+    --with-xpm-dir=/usr/local
+    --with-freetype-dir=/usr/local
+    --with-t1lib
+    --enable-gd-native-ttf
+    --enable-gd-jis-conv
+    --with-openssl
+    --with-pdo-mysql
+    --with-gettext
+    --with-zlib
+    --with-bz2
+    --with-recode
+    --with-mysqli
+    --with-readline
+    chdir={{ build_dir.path }}/php-src
+    creates={{ build_dir.path }}/php-src/Makefile
+  tags: php7
+
+- name: Build PHP
+  shell: >
+    make clean &&
+    make
+    chdir={{ build_dir.path }}/php-src
+    creates={{ build_dir.path }}/php-src/sapi/cli/php
+  tags: php7
+
+- name: Install PHP
+  command: >
+    make install
+    chdir={{ build_dir.path }}/php-src
+    creates={{ build_dir.path }}/bin/php
+  notify:
+    - Restart php7_fpm
+  tags: php7

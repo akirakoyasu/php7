@@ -1,0 +1,16 @@
+
+- name: Be sure installed nginx
+  pkgng: name=nginx state=present
+  sudo: yes
+  tags: nginx
+
+- name: Be sure service nginx enabled and started
+  service: name=nginx enabled=yes state=started
+  sudo: yes
+  tags: nginx
+
+- include: php7.yml
+- include: php7_fpm.yml
+
+- include: php5.yml
+- include: php5_fpm.yml
