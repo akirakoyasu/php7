@@ -7,7 +7,10 @@
 
 ===== Introduction =====
 Before 5.5.0, we can use the '/e' modifier. Here is a piece of code with 5.4.x:
-<code php Zend/zend_vm_gen.php>
+
+```php
+Zend/zend_vm_gen.php
+
 $code = preg_replace(
                 array(
                     "/EXECUTE_DATA/m",
@@ -22,10 +25,13 @@ $code = preg_replace(
                     "'return '.helper_name('\\1',$spec,'$op1','$op2').'(\\2, ZEND_OPCODE_HANDLER_ARGS_PASSTHRU);'",
                 ),
                 $code);
-</code>
+```
 
 Since 5.5.0, we deprecated the /e modifier, so we have to change it to:
-<code php Zend/zend_vm_gen.php>
+
+```php
+Zend/zend_vm_gen.php
+
 $code = preg_replace_callback(
     array(
         "/EXECUTE_DATA/m",
@@ -44,7 +50,7 @@ $code = preg_replace_callback(
 	    return "return " . helper_name($matches[1], $spec, $op1, $op2) . "(ZEND_OPCODE_HANDLER_ARGS_PASSTHRU)";
         }
     }, $code);
-</code>
+```
 
 ===== Proposal =====
 The preg_replace_callback_array function is an extension to preg_replace_callback. With the function, each pattern can easily have a specific callback.
@@ -54,7 +60,10 @@ This is the best way to implement when there are multiple patterns.
 With preg_replace_callback_array, the code is more readable, and full of logic. There is less crazy branch determination.
 
 With the preg_replace_callback_array function, the code is:
-<code php Zend/zend_vm_gen.php>
+
+```php
+Zend/zend_vm_gen.php
+
 $code = preg_replace_callback_array(
 	array(
 		"/EXECUTE_DATA/m" => function($matches) {
@@ -70,7 +79,7 @@ $code = preg_replace_callback_array(
 			return "return " . helper_name($matches[1], $spec, $op1, $op2) . "(" . $matches[2]. ", ZEND_OPCODE_HANDLER_ARGS_PASSTHRU);";
 		},
 	), $code);
-</code>
+```
 
 The first parameter is an array in this function. In this parameter, Key is pattern, and value is callback. Subject will iterate and match each key. If it is matched, the callback will be called. In the meanwhile, the result will be the new subject and passed to the next match.
 

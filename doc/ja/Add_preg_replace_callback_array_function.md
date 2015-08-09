@@ -5,9 +5,9 @@
   * Status: Implemented (in PHP 7.0)
   * First Published at: https://wiki.php.net/rfc/preg_replace_callback_array
 
-===== Introduction =====
+===== 導入 =====
 
-5.5.0以前、我々は'/e'修飾子を使用することができた。5.4.xでのコードがこれだ：
+5.5.0以前、我々は'/e'修飾子を使用することができた。5.4.xでのコードが以下である：
 
 ```php
 Zend/zend_vm_gen.php
@@ -55,7 +55,7 @@ $code = preg_replace_callback(
 ===== 提案 =====
 
 preg_replace_callback_array関数はpreg_replace_callbackの拡張である。この関数を使えば、それぞれのパターンに
-容易にあるコールバックを持たせられる。
+容易に特定のコールバックを持たせられる。
 
 これは複数のパターンがあるときの最適な実装方法である。
 
@@ -88,11 +88,11 @@ $code = preg_replace_callback_array(
 対象は繰り返しそれぞれのキーにマッチするか検査される。もしマッチすれば、コールバックが呼ばれる。その間に、
 結果が新しい対象として次の検査に渡される。
 
-===== Proposed PHP Version(s) =====
+===== 提案するPHPバージョン =====
 
 This is proposed for PHP7
 
-===== Unaffected PHP Functionality =====
+===== 影響のないPHP機能 =====
 
 preg_filter(), preg_replace(), preg_replace_callback() will stay the same.
 

@@ -214,7 +214,7 @@ method_modifiers function returns_ref identifier '(' parameter_list ')' //...
 
 => The first patch has been discarded during discussion on voting phase. It was considered too "ad-hoc" and could cause issues for PHP 7.1 and ahead.
 
-===== Proposed PHP Version(s) =====
+===== 提案するPHPバージョン =====
 
 This is proposed for the next PHP x, which at the time of this writing would be PHP 7.
 

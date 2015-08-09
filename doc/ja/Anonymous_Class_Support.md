@@ -6,43 +6,45 @@
   * Status: Implemented (in PHP 7.0)
   * First Published at: http://wiki.php.net/rfc/anonymous_classes
 
-===== Introduction =====
+===== 導入 =====
 
-For some time PHP has featured anonymous function support in the shape of Closures; this patch introduces the same kind of functionality for objects of an anonymous class.
+かなり以前から、PHPにはクロージャの形式をした特徴的な匿名関数をサポートしている。このパッチは
+匿名クラスのオブジェクトのための同様の機能を導入する。
 
-The ability to create objects of an anonymous class is an established and well used part of Object Orientated programming in other languages (namely C# and Java).
+匿名クラスのオブジェクトを作成する能力は他の言語（すなわちC#とJava）のオブジェクト指向プログラミング
+で確立されかつよく使われる部分である。
 
-An anonymous class might be used over a named class:
+匿名クラスは名前付きクラスの上で使われるだろう：
+* そのクラスを文書化する必要がないとき
+* そのクラスが実行時に一度しか使われないとき
 
-  * when the class does not need to be documented
-  * when the class is used only once during execution
+匿名クラスは（プログラマが宣言した）名前を持たないクラスである。そのオブジェクトの機能は名前付きクラス
+のオブジェクトのそれと変わりない。既存のクラスの構文を使い、名前を持たない：
 
-An anonymous class is a class without a (programmer declared) name. The functionality of the object is no different from that of an object of a named class. They use the existing class syntax, with the name missing:
-
-<code php>
+```php
 var_dump(new class($i) {
     public function __construct($i) {
         $this->i = $i;
     }
 });
-</code>
+```
 
-===== Syntax and Examples =====
+===== 構文と例 =====
 
 new class (arguments) {definition}
 
-Note: in a previous version of this RFC, the arguments were after the definition, this has been changed to reflect the feedback during the last discussion.
+注記： このRFCの以前のバージョンでは引数は定義の後にあったが、最新の議論からのフィードバックを受けて変更された。
 
-<code php>
+```php
 <?php
-/* implementing an anonymous console object from your framework maybe */
+/* 使用しているフレームワークなどから匿名のコンソールオブジェクトを実装 */
 (new class extends ConsoleProgram {
     public function main() {
        /* ... */
     }
 })->bootstrap();
 
-/* return an anonymous implementation of a Page for your MVC framework */
+/* 使用しているMVCフレームワークからページの匿名実装を返却 */
 return new class($controller) implements Page {
     public function __construct($controller) {
         /* ... */
@@ -59,7 +61,7 @@ class MyPage implements Page {
 }
 return new MyPage($controller);
 
-/* return an anonymous extension of the DirectoryIterator class */
+/* DirectoryIteratorクラスの匿名拡張を返却 */
 return new class($path) extends DirectoryIterator {
    /* ... */
 };
@@ -70,7 +72,7 @@ class MyDirectoryIterator {
 }
 return new MyDirectoryIterator($path);
 
-/* return an anon class from within another class (introduces the first kind of nested class in PHP) */
+/* 他のクラス内から匿名クラスを返却（PHPで最初のネストされたクラスの導入である）*/
 class MyObject extends MyStuff {
     public function getInterface() {
         return new class implements MyInterface {
@@ -80,7 +82,7 @@ class MyObject extends MyStuff {
 }
 
 
-/* return a private object implementing an interface */
+/* インターフェースを実装したプライベートなオブジェクトを返却 */
 class MyObject extends MyStuff {
     /* suitable ctor */
 
@@ -90,15 +92,15 @@ class MyObject extends MyStuff {
         };
     }
 }
-</code>
+```
 
-Note: the ability to declare and use a constructor in an anonymous class is necessary where control over construction must be exercised.
+注記： 匿名クラスでコンストラクタを宣言、また使用する能力はコンストラクト制御を効かせるために必要である
 
-===== Inheritance/Traits =====
+===== 継承/トレイト =====
 
-Extending classes works just as you'd expect.
+クラスの拡張はあなたが期待するとおりに動作する。
 
-<code php>
+```php
 <?php
 
 class Foo {}
@@ -106,11 +108,11 @@ class Foo {}
 $child = new class extends Foo {};
 
 var_dump($child instanceof Foo); // true
-</code>
+```
 
-Traits work identically as in named class definitions too.
+トレイトも名前付きクラスの定義と全く同様に動作する。
 
-<code php>
+```php
 <?php
 
 trait Foo {
@@ -124,39 +126,42 @@ $anonClass = new class {
 };
 
 var_dump($anonClass->someMethod()); // string(3) "bar"
-</code>
+```
 
-===== Reflection =====
+===== リフレクション =====
 
-The only change to reflection is to add ReflectionClass::isAnonymous().
+リフレクションへの唯一の変更は ReflectionClass::isAnonymous() の追加である。
 
-===== Serialization =====
+===== 直列化 =====
 
-Serialization is not supported, and will error just as anonymous functions do.
+直列化はサポートされない。匿名関数がエラーとなるのと同様である。
 
-===== Internal Class Naming =====
+===== クラスへの内部的な命名 =====
 
-The internal name of an anonymous class is generated with a unique reference based on its address.
+匿名クラスの内部的な名前は、そのアドレスを基にした固有な参照から生成される。
 
-<code php>
+```php
 function my_factory_function(){
     return new class{};
 }
-</code>
+```
 
-get_class(my_factory_function()) would return "class@0x7fa77f271bd0" even if called multiple times, as it is the same definition. The word "class" is used by default, but if the anonymous class extends a named class it will use that:
+get_class(my_factory_function()) は定義が同じであれば何度コールされても "class@0x7fa77f271bd0" を
+返すだろう。デフォルトで"class"という語が使用されるが、匿名クラスが名前付きクラスを拡張する場合には
+そのクラスの名前が使用される：
 
-<code php>
+```php
 class mine {}
 
 new class extends mine {};
-</code>
+```
 
-This class name will be "mine@0x7fc4be471000".
+このクラスの名前は "mine@0x7fc4be471000" となる。
 
-Multiple anonymous classes created in the same position (say, a loop) can be compared with `==`, but those created elsewhere will not match as they will have a different name.
+同じ場所（例えばループ）で生成された複数の匿名クラスは `==` で比較できるが、他の場所で生成されたものは
+別の名前を持つため一致することはないだろう。
 
-<code php>
+```php
 $identicalAnonClasses = [];
 
 for ($i = 0; $i < 2; $i++) {
@@ -178,23 +183,25 @@ $identicalAnonClasses[2] = new class(99) {
 };
 
 var_dump($identicalAnonClasses[0] == $identicalAnonClasses[2]); // false
-</code>
+```
 
-Both classes where identical in every way, other than their generated name.
+両方のクラスは生成された名前以外は、あらゆる面で同じである。
 
-===== Use Cases =====
+===== ユースケース =====
 
-Code testing presents the most significant number of use cases, however, where anonymous classes are a part of a language they do find their way into many use cases, not just testing. Whether it is technically correct to use an anonymous class depends almost entirely on an individual application, or even object depending on perspective.
+コードテストがユースケースの中で最も重要な位置を占めている。しかし、匿名クラスが言語の一部である場合、
+テストだけでなく多くのユースケースが発見されている。匿名クラスを使用することが厳密に正しいかどうかは
+ほぼそれぞれのアプリケーション次第、もしくはものの見方次第である。
 
-A few quick points:
+ざっくりしたポイントとしては：
+* モックテストが超簡単になる。複雑なモックAPIを使わずに、オンザフライでインターフェースの実装を作る
+* クラスが定義されたスコープ外でのクラスの使用を保つ
+* ほんの小さな実装のためにオートローダーが起動するのを避ける
 
-  * Mocking tests becomes easy as pie. Create on-the-fly implementations for interfaces, avoiding using complex mocking APIs.
-  * Keep usage of these classes outside the scope they are defined in
-  * Avoid hitting the autoloader for trivial implementations
+既存のクラスをほんの僅か変更するだけで、これはごく容易になる。[Pusher PHP library](https://github.com/pusher/pusher-http-php#debugging--logging)
+から例を参照してほしい：
 
-Tweaking existing classes which only change a single thing can make this very easy. Taking an example from the [[https://github.com/pusher/pusher-http-php#debugging--logging|Pusher PHP library]]:
-
-<code php>
+```php
 // PHP 5.x
 class MyLogger {
   public function log($msg) {
@@ -210,23 +217,24 @@ $pusher->setLogger(new class {
     print_r($msg . "\n");
   }
 });
-</code>
+```
 
-This saved us making a new file, or placing the class definition at the top of the file or somewhere a long way from its usage. For big complex actions, or anything that needs to be reused, that would of course be better off as a named class, but in this case it's nice and handy to not bother.
+新しいファイルを作成したり、クラス定義をファイルの先頭、あるいは使用される場所から遠く離れた場所に
+配置したりしなくてよくなる。大きく複雑なアクション、あるいは繰り返し使用する必要のあるものは
+もちろん名前付きクラスにしたほうが良いが、この場合には煩雑でないことがすばらしく、手軽である。
 
-If you need to implement a very light interface to create a simple dependency:
+もし簡単な依存性を作成して、とても軽いインターフェースを実装する必要があるなら：
 
-<code php>
+```php
 $subject->attach(new class implements SplObserver {
   function update(SplSubject $s) {
     printf("Got update from: %s\n", $subject);
   }
 });
-</code>
+```
+これはひとつの例だが、PSR-7 のミドルウェアを Laravel5 スタイルのミドルウェアに変換するものだ。
 
-Here is one example, which covers converting PSR-7 middleware to Laravel 5-style middleware.
-
-<code php>
+```php
 <?php
 $conduit->pipe(new class implements MiddlewareInterface {
     public function __invoke($request, $response, $next)
@@ -240,11 +248,12 @@ $conduit->pipe(new class implements MiddlewareInterface {
         return mungeLaravelToPsr2Response($response);
     }
 });
-</code>
+```
 
-Anonymous classes do present the opportunity to create the first kind of nested class in PHP. You might nest for slightly different reasons to creating an anonymous class, so that deserves some discussion;
+匿名クラスは、PHPで初のネストされたクラスを作成する機会を示している。あなたはわずかに異なる理由で
+匿名クラスをネストするかもしれず、それはいくらか議論するにふさわしい。
 
-<code php>
+```php
 <?php
 class Outside {
     protected $data;
@@ -262,19 +271,24 @@ class Outside {
         };
     }
 }
-</code>
+```
 
-Note: Outer is extended not for access to $this->data - that could just be passed into a constructor; extending Outer allows the nested class implementing ArrayAccess permission to execute protected methods, declared in the Outer class, on the same $this->data, and if by reference, as if they are the Outer class.
+注記： Outer は $this->data のアクセスのために拡張されたのではない ー それであれば単にコンストラクタに
+渡せばよい。 Outer を拡張することで、 ArrayAccess を実装したネストされたクラスは Outerクラスで
+宣言された protected なメソッドを同じ $this->data 上で実行することができ、参照としては
+まるでOuterクラスであるかのようである。
 
-In the simple example above Outer::getArrayAccess takes advantage of anonymous classes to declare and create an ArrayAccess interface object for Outer.
+上記の単純な例では、Outer::getArrayAccess は Outer のための ArrayAccessインターフェースオブジェクトを
+宣言し作成する匿名クラスを利用している。
 
-By making getArrayAccess private the anonymous class it creates can be said to be a private class.
+getArrayAccess を private にすることで、作成される匿名クラスは private なクラスと言えるようになる。
 
-This increases the possibilities for grouping of your objects functionality, can lead to more readable, some might say more maintainable code.
+これはオブジェクトの機能をまとめられる可能性を高め、より可読性が高く、メンテナンス性が高いとも
+言えるコードをもたらすだろう。
 
-The alternative to the above is the following:
+上記の代わりとしては以下もありうる：
 
-<code php>
+```php
 class Outer implements ArrayAccess {
     public $data;
 
@@ -288,19 +302,22 @@ class Outer implements ArrayAccess {
     public function offsetExists($offset) { return isset($this->data[$offset]); }
 
 }
-</code>
+```
 
-Pass-by-reference is not used in the examples above, so behaviour with regard to $this->data should be implicit.
+上の例では参照渡しは使われていないため、$this->data に関する振る舞いは暗黙的となる。
 
-How you choose to do it for any specific application, whether getArrayAccess is private or not, whether to pass by reference or not, depends on the application.
+あるアプリケーションでどのように選択するか、getArrayAccess は private か否か、参照渡しを
+行うか否かは、そのアプリケーション次第である。
 
-Various use cases have been suggested on the mailing list: http://php.markmail.org/message/sxqeqgc3fvs3nlpa?q=anonymous+classes+php, and here are a few.
+様々なユースケースがメーリングリストで提案されている：
+http://php.markmail.org/message/sxqeqgc3fvs3nlpa?q=anonymous+classes+php, いくつかを示す。
 
 ----
 
-The use case is one-time usage of an "implementation", where you currently
-probably pass callbacks into a "Callback*"-class like
-<code php>
+ユースケースは"実装"を一度だけ使用する場合である。現在はまず"Callback*"-クラスにコールバックを
+渡すような。
+
+```php
     $x = new Callback(function() {
         /* do something */
     });
@@ -313,19 +330,19 @@ probably pass callbacks into a "Callback*"-class like
             /* do something */
         }
     };
-</code>
+```
 
-Imagine you have several abstract methods in one interface/class, which
-would need several callbacks passed to the constructor.
-Also '$this' is mapped to the right objects.
+いくつかの抽象メソッドがひとつのインターフェース/クラスにあり、いくつかのコールバックをコンストラクタに
+渡す必要があると想像てみよう。
+また '$this' は正しいオブジェクトにマップされるとして。
 
-Overriding a specific method in a class is one handy use. Instead of creating
-a new class that extends the original class, you can just use an anonymous
-class and override the methods that you want.
+クラスのあるメソッドをオーバーライドすることは簡単な使用法のひとつである。元のクラスを拡張した
+新しいクラスを作成する代わりに、匿名クラスを使い、オーバーライドしたいメソッドをオーバーライド
+することができる。
 
-E.G; You can to the following:
+例えば、以下のようにすることができる：
 
-<code php>
+```php
 use Symfony\Component\Process\Process;
 
 $process = new class extends Process {
@@ -333,9 +350,11 @@ $process = new class extends Process {
         /* ... */
     }
 };
-</code>
-instead of the following:
-<code php>
+```
+
+以下のようにする代わりに：
+
+```php
 namespace My\Namespace\Process;
 
 use Symfony\Component\Process\Process as Base;
@@ -347,21 +366,21 @@ class Process extends Base {
 }
 
 $process = new \My\Namespace\Process\Process;
-</code>
+```
 
-===== Backward Incompatible Changes =====
+===== 後方互換性のない変更 =====
 
-New syntax that will fail to parse in previous versions, so no BC breaks.
+新しい構文は以前のバージョンではパースに失敗するため、後方互換性を損なうことはない。
 
-===== Proposed PHP Version(s) =====
+===== 提案するPHPバージョン =====
 
 7.0
 
-===== SAPIs Impacted =====
+===== SAPIへの影響 =====
 
 All
 
-===== Impact to Existing Extensions =====
+===== 既存のエクステンションへの影響 =====
 
 No impact on existing libraries
 

@@ -19,13 +19,13 @@ An anonymous class might be used over a named class:
 
 An anonymous class is a class without a (programmer declared) name. The functionality of the object is no different from that of an object of a named class. They use the existing class syntax, with the name missing:
 
-<code php>
+```php
 var_dump(new class($i) {
     public function __construct($i) {
         $this->i = $i;
     }
 });
-</code>
+```
 
 ===== Syntax and Examples =====
 
@@ -33,7 +33,7 @@ new class (arguments) {definition}
 
 Note: in a previous version of this RFC, the arguments were after the definition, this has been changed to reflect the feedback during the last discussion.
 
-<code php>
+```php
 <?php
 /* implementing an anonymous console object from your framework maybe */
 (new class extends ConsoleProgram {
@@ -90,7 +90,7 @@ class MyObject extends MyStuff {
         };
     }
 }
-</code>
+```
 
 Note: the ability to declare and use a constructor in an anonymous class is necessary where control over construction must be exercised.
 
@@ -98,7 +98,7 @@ Note: the ability to declare and use a constructor in an anonymous class is nece
 
 Extending classes works just as you'd expect.
 
-<code php>
+```php
 <?php
 
 class Foo {}
@@ -106,11 +106,11 @@ class Foo {}
 $child = new class extends Foo {};
 
 var_dump($child instanceof Foo); // true
-</code>
+```
 
 Traits work identically as in named class definitions too.
 
-<code php>
+```php
 <?php
 
 trait Foo {
@@ -124,7 +124,7 @@ $anonClass = new class {
 };
 
 var_dump($anonClass->someMethod()); // string(3) "bar"
-</code>
+```
 
 ===== Reflection =====
 
@@ -138,25 +138,25 @@ Serialization is not supported, and will error just as anonymous functions do.
 
 The internal name of an anonymous class is generated with a unique reference based on its address.
 
-<code php>
+```php
 function my_factory_function(){
     return new class{};
 }
-</code>
+```
 
 get_class(my_factory_function()) would return "class@0x7fa77f271bd0" even if called multiple times, as it is the same definition. The word "class" is used by default, but if the anonymous class extends a named class it will use that:
 
-<code php>
+```php
 class mine {}
 
 new class extends mine {};
-</code>
+```
 
 This class name will be "mine@0x7fc4be471000".
 
 Multiple anonymous classes created in the same position (say, a loop) can be compared with `==`, but those created elsewhere will not match as they will have a different name.
 
-<code php>
+```php
 $identicalAnonClasses = [];
 
 for ($i = 0; $i < 2; $i++) {
@@ -178,7 +178,7 @@ $identicalAnonClasses[2] = new class(99) {
 };
 
 var_dump($identicalAnonClasses[0] == $identicalAnonClasses[2]); // false
-</code>
+```
 
 Both classes where identical in every way, other than their generated name.
 
@@ -192,9 +192,9 @@ A few quick points:
   * Keep usage of these classes outside the scope they are defined in
   * Avoid hitting the autoloader for trivial implementations
 
-Tweaking existing classes which only change a single thing can make this very easy. Taking an example from the [[https://github.com/pusher/pusher-http-php#debugging--logging|Pusher PHP library]]:
+Tweaking existing classes which only change a single thing can make this very easy. Taking an example from the [Pusher PHP library](https://github.com/pusher/pusher-http-php#debugging--logging):
 
-<code php>
+```php
 // PHP 5.x
 class MyLogger {
   public function log($msg) {
@@ -210,23 +210,23 @@ $pusher->setLogger(new class {
     print_r($msg . "\n");
   }
 });
-</code>
+```
 
 This saved us making a new file, or placing the class definition at the top of the file or somewhere a long way from its usage. For big complex actions, or anything that needs to be reused, that would of course be better off as a named class, but in this case it's nice and handy to not bother.
 
 If you need to implement a very light interface to create a simple dependency:
 
-<code php>
+```php
 $subject->attach(new class implements SplObserver {
   function update(SplSubject $s) {
     printf("Got update from: %s\n", $subject);
   }
 });
-</code>
+```
 
 Here is one example, which covers converting PSR-7 middleware to Laravel 5-style middleware.
 
-<code php>
+```php
 <?php
 $conduit->pipe(new class implements MiddlewareInterface {
     public function __invoke($request, $response, $next)
@@ -240,11 +240,11 @@ $conduit->pipe(new class implements MiddlewareInterface {
         return mungeLaravelToPsr2Response($response);
     }
 });
-</code>
+```
 
 Anonymous classes do present the opportunity to create the first kind of nested class in PHP. You might nest for slightly different reasons to creating an anonymous class, so that deserves some discussion;
 
-<code php>
+```php
 <?php
 class Outside {
     protected $data;
@@ -262,7 +262,7 @@ class Outside {
         };
     }
 }
-</code>
+```
 
 Note: Outer is extended not for access to $this->data - that could just be passed into a constructor; extending Outer allows the nested class implementing ArrayAccess permission to execute protected methods, declared in the Outer class, on the same $this->data, and if by reference, as if they are the Outer class.
 
@@ -274,7 +274,7 @@ This increases the possibilities for grouping of your objects functionality, can
 
 The alternative to the above is the following:
 
-<code php>
+```php
 class Outer implements ArrayAccess {
     public $data;
 
@@ -288,7 +288,7 @@ class Outer implements ArrayAccess {
     public function offsetExists($offset) { return isset($this->data[$offset]); }
 
 }
-</code>
+```
 
 Pass-by-reference is not used in the examples above, so behaviour with regard to $this->data should be implicit.
 
@@ -300,7 +300,7 @@ Various use cases have been suggested on the mailing list: http://php.markmail.o
 
 The use case is one-time usage of an "implementation", where you currently
 probably pass callbacks into a "Callback*"-class like
-<code php>
+```php
     $x = new Callback(function() {
         /* do something */
     });
@@ -313,7 +313,7 @@ probably pass callbacks into a "Callback*"-class like
             /* do something */
         }
     };
-</code>
+```
 
 Imagine you have several abstract methods in one interface/class, which
 would need several callbacks passed to the constructor.
@@ -325,7 +325,7 @@ class and override the methods that you want.
 
 E.G; You can to the following:
 
-<code php>
+```php
 use Symfony\Component\Process\Process;
 
 $process = new class extends Process {
@@ -333,9 +333,9 @@ $process = new class extends Process {
         /* ... */
     }
 };
-</code>
+```
 instead of the following:
-<code php>
+```php
 namespace My\Namespace\Process;
 
 use Symfony\Component\Process\Process as Base;
@@ -347,7 +347,7 @@ class Process extends Base {
 }
 
 $process = new \My\Namespace\Process\Process;
-</code>
+```
 
 ===== Backward Incompatible Changes =====
 
