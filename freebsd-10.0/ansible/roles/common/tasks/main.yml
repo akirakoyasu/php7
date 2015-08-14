@@ -9,7 +9,7 @@
   tags: shell
 
 - name: Be sure installed python3
-  pkgng: name=python3,py34-setuptools34 state=present
+  pkgng: name=python33-3.3.4,py34-setuptools34 state=present
   sudo: yes
   tags: python
 

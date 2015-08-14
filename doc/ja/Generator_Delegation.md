@@ -6,53 +6,57 @@
   * Status: Implemented in 7.0
   * First Published at: http://wiki.php.net/rfc/generator-delegation
 
-====== Abstract ======
+====== 概要 ======
 
-This RFC proposes new ''yield from <expr>'' syntax allowing ''Generator'' functions to delegate operations to ''Traversable'' objects and arrays. The proposed syntax allows the factoring of ''yield'' statements into smaller conceptual units in the same way that discrete class methods simplify object-oriented code. The proposal is conceptually related to and requires functionality proposed by the forerunning [[rfc:generator-return-expressions|Generator Return Expressions]] RFC.
+このRFCは新しい ```yield from <expr>``` 構文によって、ジェネレータ関数に"トラバーサブル"オブジェクトや
+配列へ移譲できるようにすることを提案する。提案する構文は、分離したクラスメソッドがオブジェクト指向の
+コードをシンプルにするのと同様に ```yield``` 文をより小さな概念的ユニットにする。提案は先行するRFC、
+[Generator Return Expressions](Generator_Delegation.md) によって提案された機能性に概念的に
+関連し、依存している。
 
-====== Proposal ======
+====== 提案 ======
 
-The following new syntax is allowed in the body of generator functions:
+ジェネレータ関数の本体で次の新しい構文を許す：
 
-<code php>
+```php
     yield from <expr>
-</code>
+```
 
-In the above code ''<expr>'' is any expression that evaluates to a ''Traversable'' object or array. This
-traversable is advanced until no longer valid, during which time it sends/receives values directly
-to/from the delegating generator's caller. If the ''<expr>'' traversable is a ''Generator'' it is
-considered a subgenerator whose eventual return value is returned to the delegating generator as the
-result of the originating ''yield from'' expression.
+上記のコードで ```<expr>``` は、"トラバーサブル"オブジェクトや配列を実行するどのような式でもよい。
+移譲ジェネレータの呼出元と値を直接授受する間、このトラバーサブルは有効でなくなるまで進められる。
+もしこの ```<expr>``` トラバーサブルが"ジェネレータ"であればサブジェネレータとみなされ、最終的な
+戻り値が```yield from```式から生じた結果として移譲ジェネレータに返される。
 
-==== Terminology ====
+==== 用語 ====
 
-  * A "delegating generator" is a ''Generator'' in which the ''yield from <expr>'' syntax appears.
+- "移譲ジェネレータ"とは、```yield from <expr>```構文を含む"ジェネレータ"である
+- "サブジェネレータ"とは、```yield from <expr>```構文内の```<expr>```で使われる"ジェネレータ"
+ である
 
-  * A "subgenerator" is a ''Generator'' used in the ''<expr>'' portion of the ''yield from <expr>'' syntax.
+==== おおまかに ====
 
-==== Prosaically ====
+- トラバーサブルからyieldされたそれぞれの値は、直接移譲ジェネレータの呼出元に渡される。
+- 移譲ジェネレータの"send()"メソッドに送られたそれぞれの値は、サブジェネレータの"send()"メソッドに
+ 渡される。仮に移譲トラバーサブルがジェネレータでない場合、ジェネレータでないトラバーサブルは
+ それを受け取ることができないため、送られた値は全て無視される。
+- トラバーサブル/サブジェネレータから投げられた例外はチェーンをたどり、移譲ジェネレータへ伝播する
+- トラバーサブルがジェネレータでない場合、終点で"null"が移譲ジェネレータへ返される。トラバーサブルが
+ ジェネレータ（サブジェネレータ）であれば、戻り値は```yield from```式の値として移譲ジェネレータへ
+ 送られる。
 
-  * Each value yielded by the traversable is passed directly to the delegating generator's caller.
+==== 正式に ====
 
-  * Each value sent to the delegating generator's ''send()'' method is passed to the subgenerator's ''send()'' method. If the delegate traversable is not a generator any sent values are ignored as non-generator traversables have no capacity to receive such values.
+提案する構文
 
-  * Exceptions thrown by traversable/subgenerator advancement are propagated up the chain to the delegating generator.
-
-  * Upon traversable completion ''null'' is returned to the delegating generator if the traversable is NOT a generator. If the traversable is a generator (subgenerator) its return value is sent to the delegating generator as the value of the ''yield from'' expression.
-
-==== Formally ====
-
-The proposed syntax
-
-<code php>
+```php
 $g = function() {
     return yield from <expr>;
 };
-</code>
+```
 
-is equivalent to
+は以下と同じである。
 
-<code php>
+```php
 $g = function() {
     $iter = <expr>;
     $isSubgenerator = $iter instanceof Generator;
@@ -81,27 +85,25 @@ $g = function() {
 
     return $isSubgenerator ? $iter->getReturn() : null;
 };
-</code>
+```
 
 
-===== Rationale =====
+===== 根拠 =====
 
-A major impetus for generator delegation is refactoring and readability. At its core, this is
-the same guiding principle employed when returning values from discrete class methods. Imagine a
-class method from which no return value is possible. In such a scenario we //could// store the result
-in an instance property and subsequently retrieve it from the context of the calling code. However,
-this kind of superfluous state quickly becomes difficult to reason about.
+ジェネレータ移譲の主な動機はリファクタリングと可読性である。この中心としては、分離したクラスメソッドから
+値を返す場合に利用されるのと同じ信念である。値を返すことができないクラスメソッドを想像してみなさい。
+そのようなシナリオでは、我々はインスタンスのプロパティに結果を保持しておき、その後で呼出元の
+コード上からそれを受け取るように _できる_ 。しかし、こういった種の余分な状態はすぐに判断を難しくする。
 
-Additionally, we recognize that functional contexts lack the additional stateful context in which
-to store results. In the absence of the standard input-output paradigm there's no way to access the
-eventual result of a generator's pausable computations. Of course, it //is// possible to work around this
-suboptimal situation with references and closure ''use'' binding but these indirect approaches are
-instantly eliminated when Generator functions are allowed to return expressions. Return values minimize
-cognitive overhead in such cases by allowing programmers to directly associate an individual operation with
-its eventual result.
+しかも我々は、関数的なコンテキストには、結果を保持するような余分にステートフルなコンテキストが不足している
+ことを知っている。標準入出力のないパラダイムでは、ジェネレータの逐次処理の最終的な結果にアクセスする
+手段がない。もちろん、参照やクロージャの"use"バインディングによってこのそれなりの状況を暫定的に解決する
+ことは _できる_ が、この直接的でないアプローチはジェネレータ関数が式を返せるようになった時点で
+すぐに排除される。こういった場合に、値を返すことでプログラマにとって個々の処理と最終的な結果とを
+直接結びつけられるため、認識のオーバーヘッドを最小化できる。
 
-Generator delegation -- at its heart -- is nothing more than the application of standard factoring practices
-to allow the decomposition of complex operations into smaller cohesive units.
+ジェネレータ移譲 - その中心にあるのは、構造化されていない複雑な処理をより小さく凝集した部品にする
+標準的なプラクティスの適用以上の何者でもない。
 
 ==== Use-Case: Factored Generator Computations ====
 
@@ -110,7 +112,7 @@ into multiple discrete generators. Callers of ''myGeneratorFunction'' do not car
 individual yielded values came (nor should they). Instead, they simply iterate over the yielded values
 awaiting the generator function's eventual return.
 
-<code php>
+```php
     function myGeneratorFunction($foo) {
         // ... do some stuff with $foo ...
         $bar = yield from factoredComputation1($foo);
@@ -129,7 +131,7 @@ awaiting the generator function's eventual return.
         yield ...; // pseudo-code (something we factored out)
         return 42;
     }
-</code>
+```
 
 
 ==== Use-Case: Generators as Lightweight Threads ===
@@ -173,7 +175,7 @@ not somehow make it magically concurrent.
 
 Delegating to another generator (subgenerator)
 
-<code php>
+```php
 <?php
 
 function g1() {
@@ -200,11 +202,11 @@ int(3)
 int(4)
 int(5)
 */
-</code>
+```
 
 Delegating to an array
 
-<code php>
+```php
 <?php
 
 function g() {
@@ -225,11 +227,11 @@ int(3)
 int(4)
 int(5)
 */
-</code>
+```
 
 Delegating to non-generator traversables
 
-<code php>
+```php
 <?php
 
 function g() {
@@ -250,11 +252,11 @@ int(3)
 int(4)
 int(5)
 */
-</code>
+```
 
 The ''yield from'' expression value
 
-<code php>
+```php
 <?php
 
 function g1() {
@@ -283,7 +285,7 @@ int(3)
 int(4)
 int(42)
 */
-</code>
+```
 
 
 
@@ -320,7 +322,7 @@ we note some of the characteristics of shared generator functions.
 If a "shared" subgenerator that has previously iterated to completion is passed in a ''yield from''
 expression its completed return value is immediately returned to the delegating generator. In code:
 
-<code php>
+```php
 function subgenerator() {
     yield 1;
     return 42;
@@ -343,13 +345,13 @@ int(42)
 // This is our only output because no values are yielded
 // from the already-completed shared subgenerator
 */
-</code>
+```
 
 
 Manually advancing a shared subgenerator outside the context of the delegating generator will not
 result in an error. In code:
 
-<code php>
+```php
 function subgenerator() {
     yield 1;
     yield 2;
@@ -378,7 +380,7 @@ int(3);
 int(4);
 int(42)
 */
-</code>
+```
 
 ==== Error States ====
 

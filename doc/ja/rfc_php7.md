@@ -13,7 +13,7 @@
 このRFCは匿名クラスのサポートを提案する
 
 **[ジェネレータの委譲](Generator_Delegation.md)**  
-このRFCはジェネレータ関数の動作をサブイテレータやサブジェネレータへ委譲する、新しい構文を提案する（2015-03-01作成） :TODO
+このRFCはジェネレータ関数の動作をサブイテレータやサブジェネレータへ委譲する、新しい構文を提案する（2015-03-01作成） :In Progress
 
 **[PHP7で型名を追加予約する](Reserve_More_Type_Names_in_PHP_7.md)**  
 クラス名や名前空間でint, float, string, bool, true, false, nullを予約する（2015-02-18作成） :TODO
