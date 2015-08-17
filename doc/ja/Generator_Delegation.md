@@ -9,7 +9,7 @@
 ====== 概要 ======
 
 このRFCは新しい ```yield from <expr>``` 構文によって、ジェネレータ関数に"トラバーサブル"オブジェクトや
-配列へ移譲できるようにすることを提案する。提案する構文は、分離したクラスメソッドがオブジェクト指向の
+配列へ委譲できるようにすることを提案する。提案する構文は、分離したクラスメソッドがオブジェクト指向の
 コードをシンプルにするのと同様に ```yield``` 文をより小さな概念的ユニットにする。提案は先行するRFC、
 [Generator Return Expressions](Generator_Delegation.md) によって提案された機能性に概念的に
 関連し、依存している。
@@ -23,25 +23,25 @@
 ```
 
 上記のコードで ```<expr>``` は、"トラバーサブル"オブジェクトや配列を実行するどのような式でもよい。
-移譲ジェネレータの呼出元と値を直接授受する間、このトラバーサブルは有効でなくなるまで進められる。
+委譲ジェネレータの呼出元と値を直接授受する間、このトラバーサブルは有効でなくなるまで進められる。
 もしこの ```<expr>``` トラバーサブルが"ジェネレータ"であればサブジェネレータとみなされ、最終的な
-戻り値が```yield from```式から生じた結果として移譲ジェネレータに返される。
+戻り値が```yield from```式から生じた結果として委譲ジェネレータに返される。
 
 ==== 用語 ====
 
-- "移譲ジェネレータ"とは、```yield from <expr>```構文を含む"ジェネレータ"である
+- "委譲ジェネレータ"とは、```yield from <expr>```構文を含む"ジェネレータ"である
 - "サブジェネレータ"とは、```yield from <expr>```構文内の```<expr>```で使われる"ジェネレータ"
  である
 
 ==== おおまかに ====
 
-- トラバーサブルからyieldされたそれぞれの値は、直接移譲ジェネレータの呼出元に渡される。
-- 移譲ジェネレータの"send()"メソッドに送られたそれぞれの値は、サブジェネレータの"send()"メソッドに
- 渡される。仮に移譲トラバーサブルがジェネレータでない場合、ジェネレータでないトラバーサブルは
+- トラバーサブルからyieldされたそれぞれの値は、直接委譲ジェネレータの呼出元に渡される。
+- 委譲ジェネレータの"send()"メソッドに送られたそれぞれの値は、サブジェネレータの"send()"メソッドに
+ 渡される。仮に委譲トラバーサブルがジェネレータでない場合、ジェネレータでないトラバーサブルは
  それを受け取ることができないため、送られた値は全て無視される。
-- トラバーサブル/サブジェネレータから投げられた例外はチェーンをたどり、移譲ジェネレータへ伝播する
-- トラバーサブルがジェネレータでない場合、終点で"null"が移譲ジェネレータへ返される。トラバーサブルが
- ジェネレータ（サブジェネレータ）であれば、戻り値は```yield from```式の値として移譲ジェネレータへ
+- トラバーサブル/サブジェネレータから投げられた例外はチェーンをたどり、委譲ジェネレータへ伝播する
+- トラバーサブルがジェネレータでない場合、終点で"null"が委譲ジェネレータへ返される。トラバーサブルが
+ ジェネレータ（サブジェネレータ）であれば、戻り値は```yield from```式の値として委譲ジェネレータへ
  送られる。
 
 ==== 正式に ====
@@ -90,7 +90,7 @@ $g = function() {
 
 ===== 根拠 =====
 
-ジェネレータ移譲の主な動機はリファクタリングと可読性である。この中心としては、分離したクラスメソッドから
+ジェネレータ委譲の主な動機はリファクタリングと可読性である。この中心としては、分離したクラスメソッドから
 値を返す場合に利用されるのと同じ信念である。値を返すことができないクラスメソッドを想像してみなさい。
 そのようなシナリオでは、我々はインスタンスのプロパティに結果を保持しておき、その後で呼出元の
 コード上からそれを受け取るように _できる_ 。しかし、こういった種の余分な状態はすぐに判断を難しくする。
@@ -102,15 +102,15 @@ $g = function() {
 すぐに排除される。こういった場合に、値を返すことでプログラマにとって個々の処理と最終的な結果とを
 直接結びつけられるため、認識のオーバーヘッドを最小化できる。
 
-ジェネレータ移譲 - その中心にあるのは、構造化されていない複雑な処理をより小さく凝集した部品にする
+ジェネレータ委譲 - その中心にあるのは、構造化されていない複雑な処理をより小さく凝集した部品にする
 標準的なプラクティスの適用以上の何者でもない。
 
-==== Use-Case: Factored Generator Computations ====
+==== ユースケース： 分解されたジェネレータ計算 ====
 
-In this simple example we demonstrate the use of ''yield from'' to factor out a more complex operation
-into multiple discrete generators. Callers of ''myGeneratorFunction'' do not care from whence the
-individual yielded values came (nor should they). Instead, they simply iterate over the yielded values
-awaiting the generator function's eventual return.
+この簡単な例では、```yield from``` を利用して、より複雑な処理を複数の別ジェネレータに分解
+してみよう。"myGeneratorFunction"の呼出元は、個々のyieldされた値がどこから来たのかは気にしないし、
+気にするべきではない。その代わり、ただyieldされた値を繰り返してゆき、ジェネレータ関数の最終的な
+戻り値を待つのである。
 
 ```php
     function myGeneratorFunction($foo) {
@@ -134,46 +134,44 @@ awaiting the generator function's eventual return.
 ```
 
 
-==== Use-Case: Generators as Lightweight Threads ===
+==== ユースケース： 軽量なスレッドとしてのジェネレータ ===
 
-The defining feature of Generator functions is their support for suspending execution
-for later resumption. This capability gives applications a mechanism to
-implement asynchronous and concurrent architectures even in a traditionally single-threaded language
-like PHP. With simple userland task scheduling systems interleaved generators become lightweight
-threads of execution for concurrent processing tasks.
+ジェネレータ関数の典型的な機能は、のちの再開のための実行の中断である。この能力は、伝統的にシングル
+スレッドのPHPのような言語でも、アプリケーションに非同期で並行な機構を実装する仕組みをもたらす。
+単純なユーザ領域のタスクスケジュールシステムによって、挟み込まれたジェネレータは並行処理タスクを
+実行する軽量なスレッドとなる。
 
-In the absence of generator return values, though, applications face an environment where "background"
-tasks can be offloaded without a standardized way to return the eventual result.
-This is one reason why this proposal depends on the acceptance of the Generator Return Expressions RFC.
-The other reason return values are required stems from the previously discussed refactoring principle.
-Specifically: code using generators for threaded execution can benefit from subgenerators behaving
-like ordinary functions.
+しかしながら、ジェネレータの戻り値がなければ、アプリケーションは最終的な戻り値を返す標準化された
+方法を持たないまま、"バックグラウンド"タスクを切り離すという環境を強いられる。
+これは、この提案がジェネレータのreturn式RFCが受け入れられることに依存しているという一つの理由である。
+戻り値のもう一つの理由は、先に議論したリファクタリング原理から必須の流れである。特に： ジェネレータを
+スレッド実行のために使用したコードは、普通の関数のように振る舞うサブジェネレータの恩恵を受けることが
+できる。
 
+提案の構文を使えば、普通の関数"foo"
 Using the proposed syntax an ordinary function ''foo''
 
-''$baz = foo($bar);''
+```$baz = foo($bar);```
 
-can be transformed into a subgenerator delegation of the form
+はサブジェネレータ委譲の形に変形することができ、
 
-''$baz = yield from foo($bar);''
+```$baz = yield from foo($bar);```
 
-where ''foo'' is a pausable generator. In this manner applications can create powerful userland concurrency
-abstractions without the cognitive overhead often associated with threaded multitasking. In the
-above example generator delegation allows the language to do the heavy lifting while the programmer
-need only concern herself with the input, ''$bar'', and the eventual output, ''$baz''.
+"foo"は中断可能なジェネレータとなる。この作法に則るならば、スレッド化されたマルチタスク処理に
+ありがちな認識のオーバーヘッドがない、強力なユーザ領域での並行性の抽象をアプリケーションは
+作ることができる。上記の例ではジェネレータ委譲によって、プログラマは入力"$bar"と出力"$baz"を
+気にするだけでよく、残りの大きな仕事は言語に任せることができる。
 
-In short: generator delegation allows programmers to reason about the behaviour of the concurrent code
-simply by thinking of ''foo()'' as an ordinary function which can be suspended using a ''yield'' statement.
+つまり： ジェネレータ委譲は、プログラマに並行コードの振る舞いについて、"yield"文を使って中断させる
+ことのできる普通の関数として、単純に"foo()"を考えて判断できるようにする。
 
-**NB:** The actual implementation of coroutine task schedulers is outside the scope of
-this document. This RFC focuses only on the language-level machinery needed to make such tools more
-feasible in userland. It should be obvious that simply moving code into a generator function will
-not somehow make it magically concurrent.
+__注意：__ 実際のコルーチンのタスクスケジューラ実装はこの文書のスコープ外である。このRFCは
+ただユーザ領域でより上手くいきそうなそういったツールを作るために必要な言語レベルの機構にフォーカスする。
+単純にジェネレータ関数に移行するだけで、なぜか魔法のように並行実行されたりしないことは明らかである。
 
+===== 基本的な例 =====
 
-===== Basic Examples =====
-
-Delegating to another generator (subgenerator)
+他のジェネレータへの委譲（サブジェネレータ）
 
 ```php
 <?php
@@ -204,7 +202,7 @@ int(5)
 */
 ```
 
-Delegating to an array
+配列への委譲
 
 ```php
 <?php
@@ -229,7 +227,7 @@ int(5)
 */
 ```
 
-Delegating to non-generator traversables
+ジェネレータではないトラバーサブルへの委譲
 
 ```php
 <?php
@@ -254,7 +252,7 @@ int(5)
 */
 ```
 
-The ''yield from'' expression value
+"yield from"式の値
 
 ```php
 <?php
@@ -287,9 +285,7 @@ int(42)
 */
 ```
 
-
-
-===== Selected Implementation Details =====
+===== 選択された実装の詳細 =====
 
 The delegation implementation builds on the patch submitted as part of the Generator Return Expressions RFC.
 This implementation adds the following new parsing token:
@@ -392,8 +388,8 @@ There are two scenarios in which ''yield from'' usage can result in an ''EngineE
 
 ===== Rejected Ideas =====
 
-The original version of this RFC proposed a ''yield *'' syntax. The ''yield *'' syntax was rejected in favor of
-''yield from'' on the basis that ''*'' would break backwards compatibility. Additionally, the ''yield *''
+The original version of this RFC proposed a "yield \*" syntax. The "yield \*" syntax was rejected in favor of
+"yield \*" on the basis that "\*" would break backwards compatibility. Additionally, the "yield \*"
 form was considered less readable than the current proposal.
 
 
@@ -418,7 +414,7 @@ Other popular dynamic languages currently support variants of the proposed synta
 
 Python 3.3 generators support the ''yield from'' syntax:
 
-<code python>
+```python
 >>> def accumulate():
 ...     tally = 0
 ...     while 1:
@@ -445,13 +441,13 @@ Python 3.3 generators support the ''yield from'' syntax:
 >>> acc.send(None) # Finish the second tally
 >>> tallies
 [6, 10]
-</code>
+```
 
 **JavaScript**
 
 Javascript ES6 generators support the ''yield*'' syntax:
 
-<code javascript>
+```javascript
 function* g4() {
   yield* [1, 2, 3];
   return "foo";
@@ -472,7 +468,7 @@ console.log(iterator.next()); // { value: undefined, done: true },
                               // g4() returned { value: "foo", done: true } at this point
 
 console.log(result);          // "foo"
-</code>
+```
 
 ===== Backward Incompatible Changes =====
 
