@@ -19,12 +19,14 @@
 
 この２つの機能によって、より正しく自己説明的なPHPプログラムが書かれることが期待される。
 
-==== Changes From V0.3 (Andrea's Original Proposal) ====
+==== V0.3（Andreaの元々の提案）からの変更 ====
 
-  * ''declare(strict_types=1)'' (if used) is required to be the first instruction in the file only. No other usages allowed.
-  * ''declare(strict_types=1) {}'' (block mode) is specifically disallowed.
-  * ''int'' types can resolve a parameter type of ''float''. So calling ''requiresAFloat(10)'' will work. Note that there is no overflow or precision check (see Discussion section for more).
-  * aliases are removed (''integer'' and ''boolean'')
+- ```declare(strict_types=1)``` は（使用する場合）、ファイルの最初の命令でなければならない。
+ 他の使用方法は許可されていない。
+- ```declare(strict_types=1) {}```（ブロックモード）は明確に不許可となった。
+- "int"型は"float"の引数型も解決する。よって```requiresAFloat(10)```といった呼び出しは動作する。
+ 桁あふれや精度の検査はないことに注意してほしい。（詳細にはディスカッションセクションを参照）
+- 別名は削除された。（"integer"と"boolean"）
 
 ===== Details =====
 
