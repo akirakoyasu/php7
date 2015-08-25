@@ -3,29 +3,32 @@
   * Author: Nikita Popov <nikic@php.net>
   * Status: Implemented (in PHP 7.0)
 
-===== Introduction =====
+===== 導入 =====
 
-This RFC proposes to allow the use of exceptions in the engine and to allow the replacement of existing fatal or recoverable fatal errors with exceptions.
+このRFCはエンジンで例外を使用することと、既存の致命的エラー・回復可能な致命的エラーを例外で
+置き換えることを提案する。
 
-As an example of this change, consider the following code-snippet:
+この変更の例としては、以下の様なコードスニペットが考えられる：
 
-<code php>
+```php
 function call_method($obj) {
     $obj->method();
 }
 
 call_method(null); // oops!
-</code>
+```
 
-Currently the above code will throw a fatal error ((Since [[rfc:catchable-call-to-member-of-non-object]] it throws a recoverable fatal error instead, so this particular example no longer applies in pre-release builds of PHP)):
+現状では、上記のコードは致命的エラーを起こす。（["call to a member function of a non-object"をキャッチできるようにする](031_Catchable_call_to_a_member_function_of_a_non-object.md)以降は
+回復可能な致命的エラーとなるため、この特殊な例はプレリリースビルドのPHPには当てはまらない）：
 
-<code>
+```php
 Fatal error: Call to a member function method() on a non-object in /path/file.php on line 4
-</code>
+```
 
-This RFC replaces the fatal error with an ''EngineException''. As such it is now possible to catch this error condition:
+このRFCは致命的エラーを```EngineException```で置き換える。するとエラー条件で捕捉することが
+できるようになる：
 
-<code php>
+```php
 try {
     call_method(null); // oops!
 } catch (EngineException $e) {
@@ -33,17 +36,17 @@ try {
 }
 
 // Exception: Call to a member function method() on a non-object
-</code>
+```
 
-If the exception is not caught, PHP will continue to throw the same fatal error as it currently does.
+例外が補足されなければ、PHPは現状と同様に、致命的エラーを発生させ続ける。
 
-===== Motivation =====
+===== 動機 =====
 
-==== Summary of current error model ====
+==== 現在のエラーモデルのまとめ ====
 
-PHP currently supports 16 different error types which are listed below, grouped by severity:
+PHPは現在、重大度別に以下に挙げた16の異なるエラータイプをサポートしている。
 
-<code>
+```
 // Fatal errors
 E_ERROR
 E_CORE_ERROR
@@ -67,31 +70,39 @@ E_USER_DEPRECATED
 E_NOTICE
 E_USER_NOTICE
 E_STRICT
-</code>
+```
 
-The first four errors are fatal, i.e. they will not invoke the error handler, abort execution in the current context and directly jump (bailout) to the shutdown procedure.
+最初の4つのエラーは致命的であり、すなわちエラーハンドラを起動せず、現在のコンテキストの実行を
+中断して直接終了手続きへとジャンプする（救済措置）
 
-The ''E_RECOVERABLE_ERROR'' error type behaves like a fatal error by default, but it will invoke the error handler, which can instruct the engine to ignore the error and continue execution in the context where the error was raised.
+```E_RECOVERABLE_ERROR```エラータイプは、デフォルトでは致命的エラーのように振る舞うが、エラーハンドラを起動する。
+そこから、エンジンにエラーを無視させたり、エラーが発生した坤滴するでの実行を継続させたりできる。
 
-The ''E_PARSE'' error normally behaves like a fatal error (e.g. when ''include'' is used). However when ''eval()'' is used the bailout is not performed (the error handler is still skipped though).
+```E_PARSE```エラーは、通常は致命的エラーのように振る舞う。（例えば```include```が使われたとき）
+しかし```eval()```が使われたときは、救済措置は働かない（エラーハンドラすらもスキップされる）
 
-The remaining errors are all non-fatal, i.e. execution continues normally after they occur. The error handler is invoked for all error types apart from ''E_CORE_WARNING'' and ''E_COMPILE_WARNING''.
+残りのエラーは全て致命的ではないため、通常はそれらのエラー発生後も実行が継続する。エラーハンドラは
+```E_CORE_WARNING```と```E_COMPILE_WARNING```以外の全てのエラータイプで起動される。
 
-==== Issues with fatal errors ====
+==== 致命的エラーの問題 ====
 
-=== Cannot be gracefully handled ===
+=== うまくハンドリングできない ===
 
-The most obvious issue with fatal errors is that they immediately abort execution and as such cannot be gracefully recovered from. This behavior is very problematic in some situations.
+致命的エラーの最も明らかな問題は、直ちに実行が中断されてしまい、うまく回復できないことだ。この振る舞いは
+ある状況では極めて重大な問題になる。
 
-As an example consider a server or daemon written in PHP. If a fatal error occurs during the handling of a request it will abort not only that individual request but kill the entire server/daemon. It would be much preferable to catch the fatal error and abort the request it originated from, but continue to handle other requests.
+例えばサーバやデーモンをPHPで書いているとしよう。リクエスト処理中に致命的エラーが発生すると、
+個別のリクエストを中断させるだけでなく、サーバやデーモンを丸々終了させてしまう。致命的エラーを
+捕捉し、エラーを発生させたリクエストを中断し、なおかつ他のリクエストの処理は継続するのがより好ましいだろう。
 
-Another example is running tests in PHPUnit: If a test throws a fatal error this will abort the whole test-run. It would be more desirable to mark the individual test as failed, but continue running the rest of the testsuite.
+他の例としては、PHPUnitでのテスト実行である： テストが致命的エラーを発生すると、テスト実行すべてが
+中断される。個別のテストを失敗と記録し、残りのテストスイートの実行は継続するのがより望ましいだろう。
 
 === Error handler is not called ===
 
 Fatal errors do not invoke the error handler and as such it is hard to apply custom error handling procedures (for display, logging, mailing, ...) to them. The only way to handle a fatal error is through a shutdown function:
 
-<code php>
+```php
 register_shutdown_function(function() { var_dump(error_get_last()); });
 
 $null = null;
@@ -104,7 +115,7 @@ array(4) {
   ["file"]=> ...
   ["line"]=> ...
 }
-</code>
+```
 
 This allows rudimentary handling of fatal errors, but the available information is very limited. In particular the shutdown function is not able to retrieve a stacktrace for the error (which is possible for other error types going through the error handler.)
 
@@ -112,14 +123,14 @@ This allows rudimentary handling of fatal errors, but the available information 
 
 If a fatal error occurs ''finally'' blocks will not be invoked:
 
-<code php>
+```php
 $lock->acquire();
 try {
     doSomething();
 } finally {
     $lock->release();
 }
-</code>
+```
 
 If ''doSomething()'' in the above example results in a fatal error the ''finally'' block will not be run and the lock is not released.
 
@@ -127,7 +138,7 @@ If ''doSomething()'' in the above example results in a fatal error the ''finally
 
 When a fatal error occurs destructors are not invoked. This means that anything relying on the RAII (Resource Acquisition Is Initialization) will break. Using the lock example again:
 
-<code php>
+```php
 class LockManager {
     private $lock;
     public function __construct(Lock $lock) {
@@ -146,7 +157,7 @@ function test($lock) {
 
     // automatically release lock via dtor
 }
-</code>
+```
 
 If ''doSomething()'' in the above example throws a fatal error the destructor of ''LockManager'' is not called and as such the lock is not released.
 
@@ -168,7 +179,7 @@ While ''E_RECOVERABLE_ERROR'' is presented as a "Catchable fatal error" to the e
 
 To catch a recoverable fatal error non-intrusively code along the following lines is necessary:
 
-<code php>
+```php
 set_error_handler(function($errno, $errstr, $errfile, $errline) {
     if ($errno === E_RECOVERABLE_ERROR) {
         throw new ErrorException($errstr, $errno, 0, $errfile, $errline);
@@ -183,7 +194,7 @@ try {
 }
 
 restore_error_handler();
-</code>
+```
 
 === Performance ===
 
@@ -227,7 +238,7 @@ BaseException (abstract)
      +- RuntimeException
          +- ...
      +- ...
-</code>
+```
 
 As such engine/parse exceptions will not be caught by existing ''catch(Exception $e)'' blocks.
 
@@ -247,7 +258,7 @@ Currently parse errors generated during ''eval()'' (but not ''require'' etc) are
 
 As parse errors do not invoke the error handler, handling eval errors is tricky and requires code looking roughly as follows  ((This does not handle all cases, but should give you a rough idea of how eval errors are handled)):
 
-<code php>
+```php
 set_error_handler(function() { return false; }, 0);
 @$undefinedVariable;
 restore_error_handler();
@@ -261,17 +272,17 @@ $error = error_get_last();
 if ($result === false && $error['type'] === E_PARSE) {
     // Handle $error
 }
-</code>
+```
 
 After this RFC errors should be handled as follows instead:
 
-<code php>
+```php
 try {
     $result = eval($code);
 } catch (\ParseException $exception) {
     // Handle $exception
 }
-</code>
+```
 
 ==== Not all errors converted ====
 
@@ -283,7 +294,7 @@ E_CORE_ERROR:        12
 E_COMPILE_ERROR:    146
 E_PARSE:              1
 E_RECOVERABLE_ERROR: 17
-</code>
+```
 
 The count was obtained using ''git grep "error[^(]*(E_ERROR_TYPE" Zend | wc -l'' and as such may not be totally accurate, but should be a good approximation.
 
@@ -314,7 +325,7 @@ To simplify porting to exceptions it is possible to throw engine exceptions by p
 + zend_error(E_EXCEPTION | E_ERROR, "Cannot pass parameter %d by reference", opline->op2.num);
 + FREE_UNFETCHED_OP1();
 + HANDLE_EXCEPTION();
-</code>
+```
 
 The current patch continues using "Recoverable fatal error" messages even for errors that are not recoverable anymore in the previous sense of the word. These messages will be adjusted afterwards. (The patch tries to separate important functional changes from cosmetic tweaks.)
 
