@@ -4,25 +4,41 @@
   * Status: Implemented (in PHP 7)
   * Discussion: http://markmail.org/message/br4ixewsnqitrx3n
 
-===== Introduction =====
+===== 導入 =====
 
-This RFC proposes the introduction of an Abstract Syntax Tree (AST) as an intermediary structure in our compilation process. This replaces the existing practice of emitting opcodes directly from the parser.
+このRFCは、コンパイル処理中の中間的な構造として抽象構文木（AST）の導入を提案する。これはopcodeを
+パーサから直接発行する既存の手法を置き換える。
 
-Decoupling the parser and compiler allows us to remove a number of hacks and makes the implementation more maintainable and understandable in general. Furthermore it allows implementing syntax that was not feasible with a single-pass compilation process.
+パーサとコンパイラの分離によって、いくつものハックが不要になり、一般的に実装のメンテナンス性や
+わかりやすさが向上する。さらに、シングルパスのコンパイル処理では実現できない構文の実装が可能になる。
 
-===== Advantages of an abstract syntax tree =====
+===== 抽象構文木の利点 =====
 
-Apart from being standard practice in any compiler implementation, use of an AST has two primary advantages:
+コンパイラ実装の標準的な手法であるという以外に、ASTの利用には２つの主要な利点がある：
 
-==== More maintainable parser and compiler ====
+==== よりメンテナンス性の高いパーサとコンパイラ ====
 
-In the new AST-based implementation the compiler is fully decoupled from the parser, which leads to a code quality and maintainability improvement. In the following some examples of such improvements are discussed:
+新しいASTベースの実装では、コンパイラはパーサと完全に分離されるため、コード品質とメンテナンス性が
+向上する。そういった改善の例として以下が議論された：
 
-  * The parser no longer needs to define separate productions in cases where the same syntax requires different compilation. For example static scalar expressions no longer need to redefine all basic operations and can reuse the normal ''expr'' production.
-  * The parser needs far fewer mid-rule semantic actions. Now mid-rule reduction is only used to back up doc comments, whereas previously the use was ubiquitous. Apart from code quality concerns, this is beneficial because mid-rule actions force the parser to reduce earlier, i.e. the parser is allowed to inspect a smaller number of tokens in order to decide which rule should be reduced. This limits the syntax we can implement.
-  * Implementations of control flow structures were usually spread across multiple functions called as mid-rule actions. Jump instruction opnums were backed up into arbitrary znodes (either from the parser or from the compiler), which usually results in very hard to follow code. When reading compiler code you always have to wonder about questions like the following: To what does ''%%close_bracket_token->u.op.opline_num%%'' refer? Where was this opline emitted and what opcode does it have? What does it mean if the ''op2.opline_num'' of that opline is changed?
-  * Variables were previously implemented through a backpatch list (and stack), into which oplines necessary for ''BP_VAR_W'' fetches were inserted. Afterwards the oplines were modified or removed depending on the fetch mode that was eventually chosen. The AST-based implementation can directly compile using the correct fetch mode.
-  * We also no longer need to backpatch in a number of other places, e.g. during ''list()'' compilation.
+- 同じ構文に別のコンパイルが必要となるとき、パーサが別々の成果物を定義する必要がなくなる。例えば
+ 静的なスカラ式は全ての基本的な操作を再定義する必要はなく、標準的な```expr```成果物を再利用する
+ ことができる。
+- パーサは中間ルールのアクションをより少なくする必要がある。中間ルールによる変換は、以前は至るところで
+ 使われていたが、現在はdocコメントのバックアップにしか使われていない。コード品質の懸念を除いて、
+ 中間ルールのアクションはパーサにより早期の変換を強制するため、これは利益をもたらす。すなわち
+ 変換されるルールを決定するためにパーサはより少ないトークンを検査すればよい。これは実装可能な構文を制限する。
+- フロー制御構造の実装は、中間ルールのアクションと呼ばれる複数の機能にわたって広がっている。
+ ジャンプ命令のopnumは任意のznodeに支えられており（パーサ、コンパイラとも）、コードを追うのが
+ 非常に困難となっている。コンパイラのコードを読むとき、常に以下のような疑問を抱くに違いない：
+ ```%%close_bracket_token->u.op.opline_num%%```は何を参照しているのか？ このoplineは
+ どこに生成され、どのopcodeが持つのか？ ```op2.opline_num```のoplineが変更されることには
+ どういう意味があるのか？
+-  従来、変数はバックパッチリスト（とスタック）によって実装されていた。そこに```BP_VAR_W```
+ フェッチのために必要なoplineが挿入される。その後、最終的に選択されたフェッチモードによって
+ oplineは変更あるいは削除される。ASTベースの実装であれば、正しいフェッチモードを使って直接
+ コンパイルできる。
+- もはや他のいくつもの場所でバックパッチする必要はない。例えば```list()```のコンパイル中など。
 
 ==== Decoupling syntax decisions from technical issues ====
 
