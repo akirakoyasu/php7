@@ -17,7 +17,7 @@
   tags: php5
 
 - name: Download PHP
-  get_url: url=http://jp1.php.net/get/{{ php5_version }}.tar.bz2/from/this/mirror
+  get_url: url=http://jp2.php.net/get/{{ php5_version }}.tar.bz2/from/this/mirror
     dest={{ build_dir.path }}/{{ php5_version }}.tar.bz2
   tags: php5
 
