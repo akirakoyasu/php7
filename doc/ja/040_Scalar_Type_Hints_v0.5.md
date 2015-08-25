@@ -6,13 +6,18 @@
   * First Published at: http://wiki.php.net/rfc/scalar_type_hints_v5
   * Forked From: http://wiki.php.net/rfc/scalar_type_hints
 
-===== Summary =====
+===== 概要 =====
 
-This RFC proposes the addition of four new type declarations for scalar types: ''int'', ''float'', ''string'' and ''bool''. These type declarations would behave identically to the existing mechanisms that built-in PHP functions use.
+このRFCはスカラ型のための4つの新しい型宣言を追加することを提案する： "int"、"float"、"string"、"bool"
+である。これらの型宣言は組み込みのPHP関数が使用している既存の仕組みとまったく同じように振る舞う。
 
-This RFC further proposes the addition of a new optional per-file directive, ''declare(strict_types=1);'', which makes all function calls and return statements within a file have "strict" type-checking for scalar type declarations, including for extension and built-in PHP functions. In addition, calls to extension and built-in PHP functions with this directive produce an ''E_RECOVERABLE_ERROR'' on parameter parsing failure, bringing them into line with existing userland type declarations.
+このRFCはまた、新しく任意のファイル毎の命令の追加についても提案する。```declare(strict_types=1);```
+として、エクステンションとビルトインPHP関数を含む、ファイル内全ての関数呼び出しとreturn文について
+スカラ型宣言を"厳格に"型検査する。さらに、この命令をつけてエクステンションやビルトインPHP関数を
+呼び出し、引数のパースに失敗した場合、```E_RECOVERABLE_ERROR```を発生し、既存のユーザ領域の型宣言の
+ある行に持ってくる。
 
-With these two features, it is hoped that more correct and self-documenting PHP programs can be written.
+この２つの機能によって、より正しく自己説明的なPHPプログラムが書かれることが期待される。
 
 ==== Changes From V0.3 (Andrea's Original Proposal) ====
 
