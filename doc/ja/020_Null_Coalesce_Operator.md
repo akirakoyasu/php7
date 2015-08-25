@@ -7,15 +7,23 @@
   * First Published at: http://wiki.php.net/rfc/isset_ternary
 
 
-===== Introduction =====
+===== 導入 =====
 
-PHP is a web-focussed programming language, so processing user data is a frequent activity. In such processing it is common to check for something's existence, and if it doesn't exist, use a default value. Yet the simplest way to do this, something along the lines of ''<nowiki>isset($_GET['mykey']) ? $_GET['mykey'] : ""</nowiki>'', is unnecessarily cumbersome. The short ternary operator, ''?:'' provides a way to do this much more conveniently: ''<nowiki>$_GET['mykey'] ?: ""</nowiki>''. However, this is not good practise, as if the value does not exist it will raise an ''E_NOTICE''. Because of these issues, some sort of ifsetor() operator or a modification to ''?:'''s behaviour to make this common pattern easier has been a frequent request (See References).
+PHPはWebにフォーカスしたプログラミング言語であり、ユーザデータの処理はよくあることである。
+そういった処理では、何かの存在を確認し、それが存在しない場合デフォルトの値を使うすることがよくある。
+が、このための最もシンプルな方法はこのようになり、```isset($_GET['mykey']) ? $_GET['mykey'] : ""```
+不要に冗長なものである。短い3項演算子、```?:```はこの方法をより便利に提供する： ```$_GET['mykey'] ?: ""```
+しかし、値が存在しない場合```E_NOTICE```を発生するため、これは良い方法ではない。この問題のため、
+このよくあるパターンをより容易にするために、ifsetor()演算子の幾つかや、```?:```の振る舞いを変更することが
+たびたび要求されてきた。（リファレンスを参照）
 
-===== Proposal =====
+===== 提案 =====
 
-The coalesce, or ''??'', operator is added, which returns the result of its first operand if it exists and is not NULL, or else its second operand. This means the ''<nowiki>$_GET['mykey'] ?? ""</nowiki>'' is completely safe and will not raise an E_NOTICE. Some examples of its use:
+いわゆるcoalesce、つまり```??```演算子を追加する。これは存在しNULLでなければ、最初のオペランドの結果を
+返却し、それ以外では、第2のオペランドを返却する。これは```$_GET['mykey'] ?? ""```が完全に
+安全でE_NOTICEを発生しないことを意味する。使い方の例：
 
-<code php>
+```php
 // Fetches the request parameter user and results in 'nobody' if it doesn't exist
 $username = $_GET['user'] ?? 'nobody';
 // equivalent to: $username = isset($_GET['user']) ? $_GET['user'] : 'nobody';
@@ -28,11 +36,11 @@ $model = Model::get($id) ?? $default_model;
 $imageData = json_decode(file_get_contents('php://input'));
 $width = $imageData['width'] ?? 100;
 // equivalent to: $width = isset($imageData['width']) ? $imageData['width'] : 100;
-</code>
+```
 
-It can even be chained:
+チェーンも可能である：
 
-<code php>
+```php
 $x = NULL;
 $y = NULL;
 $z = 3;
@@ -40,23 +48,23 @@ var_dump($x ?? $y ?? $z); // int(3)
 
 $x = ["yarr" => "meaningful_value"];
 var_dump($x["aharr"] ?? $x["waharr"] ?? $x["yarr"]); // string(16) "meaningful_value"
-</code>
+```
 
-This example demonstrates the precedence relative to the ternary operator and the boolean or operator, which is the same as C#:
+この例は3項演算子、or論理演算子との優先度を示しており、C#と同じとなっている：
 
-<code php>
+```php
 var_dump(2 ?? 3 ? 4 : 5);      // (2 ?? 3) ? 4 : 5        => int(4)
 var_dump(0 || 2 ?? 3 ? 4 : 5); // ((0 || 2) ?? 3) ? 4 : 5 => int(4)
-</code>
+```
 
-This example demonstrates how it is a short-circuiting operator:
+この例は短絡演算子としての働きを示している：
 
-<code php>
+```php
 function foo() {
     echo "executed!", PHP_EOL;
 }
-var_dump(true ?? foo()); // outputs bool(true), "executed!" does not appear as it short-circuited
-</code>
+var_dump(true ?? foo()); // 短絡であるため、bool(true)を出力し"executed!"は登場しない
+```
 
 ===== Proposed PHP Version(s) =====
 
