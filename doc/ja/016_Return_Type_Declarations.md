@@ -7,8 +7,12 @@
   * First Published at: https://wiki.php.net/rfc/returntypehinting
   * Migrated to: https://wiki.php.net/rfc/return_types
 
-===== Introduction =====
-Many developers would like to be able to declare the return type of a function. The basic idea of declaring a return type has been included in at least three RFCs and has been discussed in a few other places (see [[#references]]). This RFC proposes a different approach from previous RFC's to accomplish this goal in a simple way.
+===== 導入 =====
+
+多くの開発者が関数の戻り値型を宣言できるようにしたいと思っている。戻り値型宣言の基本的な着想は
+少なくとも３つのRFCに含まれ、いくつかの他の場所（リファレンスを参照）で議論されてきた。このRFCは
+シンプルな方法でこの目標を達成するために、以前のRFCとは異なるアプローチを提案する。
+
 
 Declaring return types has several motivators and use-cases:
   * Prevent sub-types from breaking the expected return type of the super-type((See [[#variance_and_signature_validation|Variance and Signature Validation]] and [[#examples]] for more details on how this works)), especially in interfaces
