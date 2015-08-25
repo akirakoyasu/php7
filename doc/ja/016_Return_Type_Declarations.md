@@ -13,35 +13,47 @@
 少なくとも３つのRFCに含まれ、いくつかの他の場所（リファレンスを参照）で議論されてきた。このRFCは
 シンプルな方法でこの目標を達成するために、以前のRFCとは異なるアプローチを提案する。
 
+戻り値型を宣言することにはいくつかの動機とユースケースがある：
+- サブタイプが、スーパータイプの期待された戻り値型を破壊しないようにする（これがどのように働くか
+ 詳細には「可変とシグネチャ検証」と「例」を参照）。特にインターフェースについて。
+- 意図しない戻り値を防ぐ。
+- 戻り値型の情報を、容易には無効化されない方法で文書化する。
 
-Declaring return types has several motivators and use-cases:
-  * Prevent sub-types from breaking the expected return type of the super-type((See [[#variance_and_signature_validation|Variance and Signature Validation]] and [[#examples]] for more details on how this works)), especially in interfaces
-  * Prevent unintended return values
-  * Document return type information in a way that is not easily invalidated (unlike comments)
+===== 提案 =====
 
-===== Proposal =====
-This proposal adds an optional return type declaration to function declarations including closures, functions, generators,  and methods. This RFC does not change the existing type declarations nor does it add new ones (see [[#differences_from_past_rfcs|differences from past RFCs]]).
+この提案はクロージャ、関数、ジェネレータ、メソッドを含む関数宣言に、任意の戻り値型の宣言を追加する。
+このRFCは既存の型宣言を変更しないし、追加もしない。（「過去のRFCとの違い」を参照）
 
-Here is a brief example of the syntax in action:
-<PHP>
+これが動く構文の短い例である：
+
+```php
 function foo(): array {
     return [];
 }
-</PHP>
-More examples can be found in the [[#examples|Examples]] section.
+```
 
-//Code which does not declare a return type will continue to work// exactly as it currently does. This RFC requires a return type to be declared only when a method inherits from a parent method that declares a return type; in all other cases it may be omitted.
+他の例は「例」セクションにある。
 
-==== Variance and Signature Validation ====
-The enforcement of the declared return type during inheritance is invariant; this means that when a sub-type overrides a parent method then the return type of the child must exactly match the parent and may not be omitted. If the parent does not declare a return type then the child is allowed to declare one.
+現在と同様に、 _戻り値型宣言のないコードも継続して動作する。_ このRFCは、メソッドが戻り値型を
+宣言した親メソッドを継承する場合のみ、戻り値型宣言を要求する。その他のケースでは省略して構わない。
 
-If a mismatch is detected during compile time (e.g. a class improperly overriding a return type) then ''E_COMPILE_ERROR'' will be issued. If a type mismatch is detected when the function returns then ''E_RECOVERABLE_ERROR'' will be issued.
+==== 可変とシグネチャ検証 ====
 
-Covariant return types are considered to be type sound and are used in many other languages((C++, Java and others use covariant return types.)). This RFC originally proposed covariant return types but was changed to invariant because of a few issues. It is possible to add covariant return types at some point in the future.
+継承時の戻り値型宣言の強制は不変である。これは、サブタイプが親メソッドをオーバーライドするとき、
+子の戻り値型は親と完全に一致しなければならず、省略されないことを意味する。親が戻り値型を宣言していない
+場合、子が宣言してもよい。
 
-Note that this topic of variance is about the declared return type of the function; this means that the following would be valid for either invariant or covariant return types:
+コンパイル時に不一致を検出した場合、（例えば不適切に戻り値型をオーバーライドしたクラス）```E_COMPILE_ERROR```
+となる。関数の戻り時に型不一致を検出した場合、```E_RECOVERABLE_ERROR```となる。
 
-<PHP>
+共変戻り値型は適切な型であると見なされ、他の多くの言語（C++、Java他が共変戻り値型を使用している）
+で使用されている。このRFCは元々共変戻り値型を提案していたが、いくつかの問題のため不変に変更された。
+将来のいつか、共変戻り値型が追加されるかもしれない。
+
+この可変性の話題は関数の戻り値型宣言についてであることに注意してほしい。これは以下が不変、あるいは
+共変いずれかの戻り値型が有効であることを意味する：
+
+```php
 interface A {
     static function make(): A;
 }
@@ -50,39 +62,47 @@ class B implements A {
         return new B();
     }
 }
-</PHP>
+```
 
-The class ''B'' implements ''A'' so it is therefore valid. Variance is about the allowed types when overriding the declared types:
+クラス"B"は"A"を実装しているため、従ってこれは有効である。可変性は宣言された方をオーバーライド
+する場合に許される型についてである：
 
-<PHP>
+```php
 interface A {
     static function make(): A;
 }
 class B implements A {
-    static function make(): B { // must exactly match parent; this will error
+    static function make(): B { // 親と完全に一致しなければならない。これはエラーとなる
         return new B();
     }
 }
-</PHP>
+```
 
-The above sample does not work because this RFC proposes only invariant return types; this could be extended in the future to be allowed.
+このRFCは不変の戻り値型のみを提案するため、上記のサンプルは動作しない。将来拡張されて許される
+かもしれない。
 
-==== Position of Type Declaration ====
-The two major conventions in other programming languages for placing return type information are:
+==== 型宣言の場所 ====
 
-  * Before the function name
-  * After the parameter list's closing parenthesis
+戻り値型の情報を置くには、他のプログラミング言語で２つの主な慣習がある：
+- 関数名の前
+- 引数リストの閉じ括弧の後
 
-The former position has been proposed in the past and the RFCs were either declined or withdrawn. One cited issue is that many developers wanted to preserve the ability to search for <php>function foo</php> to be able to find the definition for ''foo''. A recent discussion about [[http://marc.info/?t=141235344900003&r=1&w=2|removing the function keyword]] has several comments that re-emphasized the value in preserving this.
+先の場所は過去に提案され、そのRFCは拒否されるか取り消された。挙げられる問題としては、多くの開発者が
+```function foo```で検索して"foo"の定義を見つけられるのを維持したいと望んだことである。
+[functionキーワードの削除](http://marc.info/?t=141235344900003&r=1&w=2)についての最近の議論
+でもこれを維持することの価値を再度強調するコメントがいくつかあった。
 
-The latter position is used in several languages(([[http://hacklang.org/|Hack]],  [[http://www.haskell.org|Haskell]], [[https://golang.org/|Go]], [[http://www.erlang.org/|Erlang]], [[http://www.adobe.com/devnet/actionscript.html|ActionScript]], [[http://www.typescriptlang.org/|TypeScript]] and more all put the return type after the parameter list)); notably C++11 also places the return type after the parameter lists for certain constructs such as lambdas and auto-deducing return types.
+後の場所はいくつかの言語で使用されている。（[Hack](http://hacklang.org/)、[Haskell](http://www.haskell.org)、
+[Go](https://golang.org/)、[Erlang](http://www.erlang.org/)、[ActionScript](http://www.adobe.com/devnet/actionscript.html)、
+[TypeScript](http://www.typescriptlang.org/)、その他戻り値型を引数リストの後に置く言語全て）
+特に、C++11もラムダや戻り値型の自動推定など、ある構文では戻り値型を引数リストの後に置く。
 
-Declaring the return type after the parameter list had no shift/reduce conflicts in the parser.
+引数リストの後で戻り値型を宣言すれば、パーサの移行もなく衝突も少ない。
 
 ==== Returning by Reference ====
 
 This RFC does not change the location of ''&'' when returning by reference. The following examples are valid:
-<PHP>
+```php
 function &array_sort(array &$data) {
     return $data;
 }
@@ -90,16 +110,16 @@ function &array_sort(array &$data) {
 function &array_sort(array &$data): array {
     return $data;
 }
-</PHP>
+```
 
 ==== Disallowing NULL on Return Types ====
 Consider the following function:
 
-<PHP>
+```php
 function foo(): DateTime {
     return null; // invalid
 }
-</PHP>
+```
 
 It declares that it will return ''DateTime'' but returns ''null''; this type of situation is common in many languages including PHP. By design this RFC does not allow ''null'' to be returned in this situation for two reasons:
 
@@ -112,22 +132,22 @@ The [[rfc:nullable_types|Nullable Types RFC]] addresses this shortcoming and mor
 
 Class constructors, destructors and clone methods may not declare return types. Their respective error messages are:
 
-  * ''<nowiki>Fatal error: Constructor %s::%s() cannot declare a return type in %s on line %s</nowiki>''
-  * ''<nowiki>Fatal error: Destructor %s::__destruct() cannot declare a return type in %s on line %s</nowiki>''
-  * ''<nowiki>Fatal error: %s::__clone() cannot declare a return type in %s on line %s</nowiki>''
+  * ```Fatal error: Constructor %s::%s() cannot declare a return type in %s on line %s```
+  * ```Fatal error: Destructor %s::__destruct() cannot declare a return type in %s on line %s```
+  * ```Fatal error: %s::__clone() cannot declare a return type in %s on line %s```
 
 ==== Examples ====
 Here are some snippets of both valid and invalid usage.
 
 === Examples of Valid Use ===
-<PHP>
+```php
 // Overriding a method that did not have a return type:
 interface Comment {}
 interface CommentsIterator extends Iterator {
     function current(): Comment;
 }
-</PHP>
-<PHP>
+```
+```php
 // Using a generator:
 
 interface Collection extends IteratorAggregate {
@@ -141,14 +161,14 @@ class SomeCollection implements Collection {
         }
     }
 }
-</PHP>
+```
 
 === Examples of Invalid Use ===
 
 The error messages are taken from the current patch.
 ----
 
-<PHP>
+```php
 // Covariant return-type:
 
 interface Collection {
@@ -158,46 +178,46 @@ interface Collection {
 interface Set extends Collection {
     function map(callable $fn): Set;
 }
-</PHP>
+```
 ''Fatal error: Declaration of Set::map() must be compatible with Collection::map(callable $fn): Collection in %s on line %d''
 ----
-<PHP>
+```php
 // Returned type does not match the type declaration
 
 function get_config(): array {
     return 42;
 }
 get_config();
-</PHP>
+```
 ''Catchable fatal error: Return value of get_config() must be of the type array, integer returned in %s on line %d''
 
 ----
 
-<PHP>
+```php
 // Int is not a valid type declaration
 
 function answer(): int {
     return 42;
 }
 answer();
-</PHP>
+```
 ''Catchable fatal error: Return value of answer() must be an instance of int, integer returned in %s on line %d''
 
 ----
 
-<PHP>
+```php
 // Cannot return null with a return type declaration
 
 function foo(): DateTime {
     return null;
 }
 foo();
-</PHP>
+```
 ''Catchable fatal error: Return value of foo() must be an instance of DateTime, null returned in %s on line %d''
 
 ----
 
-<PHP>
+```php
 // Missing return type on override
 
 class User {}
@@ -212,18 +232,18 @@ class UserGateway_MySql implements UserGateway {
         return new User();
     }
 }
-</PHP>
+```
 ''Fatal error: Declaration of UserGateway_MySql::find() must be compatible with UserGateway::find($id): User in %s on line %d''
 
 ----
 
-<PHP>
+```php
 // Generator return types can only be declared as Generator, Iterator or Traversable (compile time check)
 
 function foo(): array {
     yield [];
 }
-</PHP>
+```
 ''Fatal error: Generators may only declare a return type of Generator, Iterator or Traversable, %s is not permitted in %s on line %d''
 
 
@@ -241,9 +261,9 @@ This proposal differs from past RFCs in several key ways:
 
   * **The return type is positioned after the parameter list.** See [[#position_of_type_declaration|Position of Type Declaration]] for more information about this decision.
   * **We keep the current type options.** Past proposals have suggested new types such as ''void'', ''int'', ''string'' or ''scalar''; this RFC does not include any new types. Note that it does allow ''self'' and ''parent'' to be used as return types.
-  * **We keep the current search patterns.** You can still search for <php>function foo</php> to find <php>foo</php>'s definition; all previous RFCs broke this common workflow.
+  * **We keep the current search patterns.** You can still search for ```phpfunction foo``` to find ```phpfoo```'s definition; all previous RFCs broke this common workflow.
   * **We allow return type declarations on all function types**. Will Fitch's proposal suggested that we allow it for methods only.
-  * **We do not modify or add keywords.** Past RFCs have proposed new keywords such as ''nullable'' and more. We still require the <php>function</php> keyword.
+  * **We do not modify or add keywords.** Past RFCs have proposed new keywords such as ''nullable'' and more. We still require the ```phpfunction``` keyword.
 
 ===== Other Impact =====
 
@@ -281,7 +301,7 @@ This RFC was merged into the master branch (PHP 7) in commit [[https://git.php.n
 Ideas for future work which are out of the scope of this RFC include:
 
   * Allow functions to declare that they do not return anything at all (''void'' in Java and C)
-  * Allow nullable types (such as <php>?DateTime</php>). This is discussed in the [[rfc:nullable_types|Nullable Types]] RFC.
+  * Allow nullable types (such as ```php?DateTime```). This is discussed in the [[rfc:nullable_types|Nullable Types]] RFC.
   * Improve parameter variance. Currently parameter types are invariant while they could be contravariant. Change the E_STRICT on mismatching parameter types to E_COMPILE_ERROR.
   * Improve runtime performance by doing type analysis.
   * Update documentation to use the new return type syntax.
