@@ -6,32 +6,42 @@
   * First Published at: http://wiki.php.net/rfc/scalar_type_hints_v5
   * Forked From: http://wiki.php.net/rfc/scalar_type_hints
 
-===== Summary =====
+===== 概要 =====
 
-This RFC proposes the addition of four new type declarations for scalar types: ''int'', ''float'', ''string'' and ''bool''. These type declarations would behave identically to the existing mechanisms that built-in PHP functions use.
+このRFCはスカラ型のための4つの新しい型宣言を追加することを提案する： "int"、"float"、"string"、"bool"
+である。これらの型宣言は組み込みのPHP関数が使用している既存の仕組みとまったく同じように振る舞う。
 
-This RFC further proposes the addition of a new optional per-file directive, ''declare(strict_types=1);'', which makes all function calls and return statements within a file have "strict" type-checking for scalar type declarations, including for extension and built-in PHP functions. In addition, calls to extension and built-in PHP functions with this directive produce an ''E_RECOVERABLE_ERROR'' on parameter parsing failure, bringing them into line with existing userland type declarations.
+このRFCはまた、新しく任意のファイル毎の命令の追加についても提案する。```declare(strict_types=1);```
+として、エクステンションとビルトインPHP関数を含む、ファイル内全ての関数呼び出しとreturn文について
+スカラ型宣言を"厳格に"型検査する。さらに、この命令をつけてエクステンションやビルトインPHP関数を
+呼び出し、引数のパースに失敗した場合、```E_RECOVERABLE_ERROR```を発生し、既存のユーザ領域の型宣言の
+ある行に持ってくる。
 
-With these two features, it is hoped that more correct and self-documenting PHP programs can be written.
+この２つの機能によって、より正しく自己説明的なPHPプログラムが書かれることが期待される。
 
-==== Changes From V0.3 (Andrea's Original Proposal) ====
+==== V0.3（Andreaの元々の提案）からの変更 ====
 
-  * ''declare(strict_types=1)'' (if used) is required to be the first instruction in the file only. No other usages allowed.
-  * ''declare(strict_types=1) {}'' (block mode) is specifically disallowed.
-  * ''int'' types can resolve a parameter type of ''float''. So calling ''requiresAFloat(10)'' will work. Note that there is no overflow or precision check (see Discussion section for more).
-  * aliases are removed (''integer'' and ''boolean'')
+- ```declare(strict_types=1)``` は（使用する場合）、ファイルの最初の命令でなければならない。
+ 他の使用方法は許可されていない。
+- ```declare(strict_types=1) {}```（ブロックモード）は明確に不許可となった。
+- "int"型は"float"の引数型も解決する。よって```requiresAFloat(10)```といった呼び出しは動作する。
+ 桁あふれや精度の検査はないことに注意してほしい。（詳細にはディスカッションセクションを参照）
+- 別名は削除された。（"integer"と"boolean"）
 
-===== Details =====
+===== 詳細 =====
 
-==== Scalar Type Declarations ====
+==== スカラ型の宣言 ====
 
-No new reserved words are added. The names ''int'', ''float'', ''string'' and ''bool'' are recognised and allowed as type declarations, and prohibited from use as class/interface/trait names (including with ''use'' and ''class_alias'').
+新しい予約語はない。"int"、"float"、"string"、"bool"は型宣言として認識され、許可されており、
+クラスやインターフェース、トレイト名として（"use"や"class_alias"を含み）使用することは許されない。
 
-The new userland scalar type declarations are implemented internally by calling the Fast Parameter Parsing API functions.
+新しいユーザ領域のスカラ型宣言は、内部的にFast Parameter Parsing API関数をコールして実装されている。
 
-==== strict_types declare() directive ====
+==== strict_types declare() 命令 ====
 
-By default, all PHP files are in weak type-checking mode. A new ''declare()'' directive is added, ''strict_types'', which takes either ''1'' or ''0''. If ''1'', strict type-checking mode is used for function calls and return statements in the the file. If ''0'', weak type-checking mode is used.
+デフォルトでは、全てのPHPファイルは弱い型検査モードとなる。新しい"declare()"命令と"1"か"0"を取る
+"strict_types"を追加する。"1"の場合、そのファイル内の関数呼び出しとreturn文で厳格な型検査モードが
+使用される。"0"の場合、弱い型検査モードが使用される。
 
 The ''declare(strict_types=1)'' directive **must** be the first statement in a file. If it appears anywhere else in the file it will generate a compiler error. Block mode is also explicitly disallowed (''declare(strict_types=1);'' is the only allowed form).
 

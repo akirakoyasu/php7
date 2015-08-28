@@ -1,5 +1,7 @@
 # PHP7 RFC translation into Japanese / 日本語訳
 
+https://wiki.php.net/rfc#php_70
+
 ## English
 
 [Original list / 原文リスト](rfc_php7.md)
