@@ -1,3 +1,9 @@
+
+- name: Update apt-cache
+  apt: update_cache=yes
+  sudo: yes
+  tags: all
+
 - name: Be sure installed zsh
   apt: name=zsh state=present
   sudo: yes
