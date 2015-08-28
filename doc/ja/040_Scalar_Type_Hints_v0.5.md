@@ -28,17 +28,20 @@
  桁あふれや精度の検査はないことに注意してほしい。（詳細にはディスカッションセクションを参照）
 - 別名は削除された。（"integer"と"boolean"）
 
-===== Details =====
+===== 詳細 =====
 
-==== Scalar Type Declarations ====
+==== スカラ型の宣言 ====
 
-No new reserved words are added. The names ''int'', ''float'', ''string'' and ''bool'' are recognised and allowed as type declarations, and prohibited from use as class/interface/trait names (including with ''use'' and ''class_alias'').
+新しい予約語はない。"int"、"float"、"string"、"bool"は型宣言として認識され、許可されており、
+クラスやインターフェース、トレイト名として（"use"や"class_alias"を含み）使用することは許されない。
 
-The new userland scalar type declarations are implemented internally by calling the Fast Parameter Parsing API functions.
+新しいユーザ領域のスカラ型宣言は、内部的にFast Parameter Parsing API関数をコールして実装されている。
 
-==== strict_types declare() directive ====
+==== strict_types declare() 命令 ====
 
-By default, all PHP files are in weak type-checking mode. A new ''declare()'' directive is added, ''strict_types'', which takes either ''1'' or ''0''. If ''1'', strict type-checking mode is used for function calls and return statements in the the file. If ''0'', weak type-checking mode is used.
+デフォルトでは、全てのPHPファイルは弱い型検査モードとなる。新しい"declare()"命令と"1"か"0"を取る
+"strict_types"を追加する。"1"の場合、そのファイル内の関数呼び出しとreturn文で厳格な型検査モードが
+使用される。"0"の場合、弱い型検査モードが使用される。
 
 The ''declare(strict_types=1)'' directive **must** be the first statement in a file. If it appears anywhere else in the file it will generate a compiler error. Block mode is also explicitly disallowed (''declare(strict_types=1);'' is the only allowed form).
 
