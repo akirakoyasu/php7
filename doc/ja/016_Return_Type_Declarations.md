@@ -291,21 +291,27 @@ RFCがあるからだ： [Add typehint accessors to ReflectionParameter](https:/
 ===== その他の影響 =====
 
 ==== On Backward Compatiblity ====
+
 This RFC is backwards compatible with previous PHP releases.
 
 ==== On SAPIs ====
+
 There is no impact on any SAPI.
 
 ==== On Existing Extensions =====
+
 The structs ''zend_function'' and ''zend_op_array'' have been changed; extensions that work directly with these structs may be impacted.
 
 ==== On Performance ====
+
 An informal test indicates that performance has not seriously degraded. More formal performance testing can be done before voting phase.
 
 ===== Proposed PHP Version(s) =====
+
 This RFC targets PHP 7.
 
 ===== Vote =====
+
 This RFC modifies the PHP language syntax and therefore requires a two-third majority of votes.
 
 Should return types as outlined in this RFC be added to the PHP language? Voting will end on January 23, 2015.
@@ -321,6 +327,7 @@ Dmitry and I have updated the implementation to a more current master branch her
 This RFC was merged into the master branch (PHP 7) in commit [[https://git.php.net/?p=php-src.git;a=commit;h=638d0cb7531525201e00577d5a77f1da3f84811e|638d0cb7531525201e00577d5a77f1da3f84811e]].
 
 ===== Future Work =====
+
 Ideas for future work which are out of the scope of this RFC include:
 
   * Allow functions to declare that they do not return anything at all (''void'' in Java and C)
@@ -330,6 +337,7 @@ Ideas for future work which are out of the scope of this RFC include:
   * Update documentation to use the new return type syntax.
 
 ===== References =====
+
   * [[rfc:returntypehint2|Method Return Type-hints]] by Will Fitch; 2011. [[http://marc.info/?t=132443368800001&r=1&w=2|Mail Archive]].
   * [[rfc:returntypehint|Return Type-hint]] by Felipe; 2010. [[http://marc.info/?l=php-internals&m=128036818909738&w=2|Mail Archive]]
   * [[rfc:typehint|Return value and parameter type hint]] by Felipe; 2008. [[http://marc.info/?l=php-internals&m=120753976214848&w=2|Mail Archive]].
