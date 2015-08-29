@@ -99,9 +99,10 @@ class B implements A {
 
 引数リストの後で戻り値型を宣言すれば、パーサの移行もなく衝突も少ない。
 
-==== Returning by Reference ====
+==== 参照の返却 ====
 
-This RFC does not change the location of ''&'' when returning by reference. The following examples are valid:
+このRFCは参照の返却をする場合の"&"の場所を変更しない。以下の例は有効である：
+
 ```php
 function &array_sort(array &$data) {
     return $data;
@@ -112,32 +113,38 @@ function &array_sort(array &$data): array {
 }
 ```
 
-==== Disallowing NULL on Return Types ====
-Consider the following function:
+==== 戻り値型でのNULLの不許可 ====
+
+以下の関数を考えよう：
 
 ```php
 function foo(): DateTime {
-    return null; // invalid
+    return null; // 無効
 }
 ```
 
-It declares that it will return ''DateTime'' but returns ''null''; this type of situation is common in many languages including PHP. By design this RFC does not allow ''null'' to be returned in this situation for two reasons:
+"DateTime"を返すと宣言しているが、"null"を返している。PHPを含む多くの言語でこの種の状況は
+よくある。2つの理由から、このRFCではこういった状況で返す"null"を意図的に許可していない：
+- これは現在の引数型の振る舞いに沿うものである。引数に型宣言があるとき、"null"値は許可されていない。
+ （引数が"null"をデフォルト値として持つ以外）
+- デフォルトで"null"を許可することは型宣言の目的に反するはたらきがある。型宣言はその周りのコードについて
+ 考えるのを容易にする。もし"null"を許可するならば、プログラマは常に"null"の場合について心配する
+ 必要が出てくる。
 
-  - This aligns with current parameter type behavior. When parameters have a type declared, a value of ''null'' is not allowed ((Except when the parameter has a ''null'' default)).
-  - Allowing ''null'' by default works against the purpose of type declarations. Type declarations make it easier to reason about the surrounding code. If ''null'' was allowed the programmer would always have to worry about the ''null'' case.
+[Nullable Types RFC](https://wiki.php.net/rfc/nullable_types)はこの欠点などに取り組むもの
+である。
 
-The [[rfc:nullable_types|Nullable Types RFC]] addresses this shortcoming and more.
+==== 戻り値型を宣言できないメソッド ====
 
-==== Methods which cannot declare return types ====
+クラスコンストラクタ、デストラクタ、クローンメソッドは戻り値を宣言しなくてよい。それぞれのエラーメッセージは
+以下である：
+- ```Fatal error: Constructor %s::%s() cannot declare a return type in %s on line %s```
+- ```Fatal error: Destructor %s::__destruct() cannot declare a return type in %s on line %s```
+- ```Fatal error: %s::__clone() cannot declare a return type in %s on line %s```
 
-Class constructors, destructors and clone methods may not declare return types. Their respective error messages are:
+==== 例 ====
 
-  * ```Fatal error: Constructor %s::%s() cannot declare a return type in %s on line %s```
-  * ```Fatal error: Destructor %s::__destruct() cannot declare a return type in %s on line %s```
-  * ```Fatal error: %s::__clone() cannot declare a return type in %s on line %s```
-
-==== Examples ====
-Here are some snippets of both valid and invalid usage.
+有効な使用法と無効な使用法のスニペットをいくつか挙げる。
 
 === Examples of Valid Use ===
 ```php
