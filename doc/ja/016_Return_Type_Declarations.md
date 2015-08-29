@@ -99,9 +99,10 @@ class B implements A {
 
 引数リストの後で戻り値型を宣言すれば、パーサの移行もなく衝突も少ない。
 
-==== Returning by Reference ====
+==== 参照の返却 ====
 
-This RFC does not change the location of ''&'' when returning by reference. The following examples are valid:
+このRFCは参照の返却をする場合の"&"の場所を変更しない。以下の例は有効である：
+
 ```php
 function &array_sort(array &$data) {
     return $data;
@@ -112,43 +113,49 @@ function &array_sort(array &$data): array {
 }
 ```
 
-==== Disallowing NULL on Return Types ====
-Consider the following function:
+==== 戻り値型でのNULLの不許可 ====
+
+以下の関数を考えよう：
 
 ```php
 function foo(): DateTime {
-    return null; // invalid
+    return null; // 無効
 }
 ```
 
-It declares that it will return ''DateTime'' but returns ''null''; this type of situation is common in many languages including PHP. By design this RFC does not allow ''null'' to be returned in this situation for two reasons:
+"DateTime"を返すと宣言しているが、"null"を返している。PHPを含む多くの言語でこの種の状況は
+よくある。2つの理由から、このRFCではこういった状況で返す"null"を意図的に許可していない：
+- これは現在の引数型の振る舞いに沿うものである。引数に型宣言があるとき、"null"値は許可されていない。
+ （引数が"null"をデフォルト値として持つ以外）
+- デフォルトで"null"を許可することは型宣言の目的に反するはたらきがある。型宣言はその周りのコードについて
+ 考えるのを容易にする。もし"null"を許可するならば、プログラマは常に"null"の場合について心配する
+ 必要が出てくる。
 
-  - This aligns with current parameter type behavior. When parameters have a type declared, a value of ''null'' is not allowed ((Except when the parameter has a ''null'' default)).
-  - Allowing ''null'' by default works against the purpose of type declarations. Type declarations make it easier to reason about the surrounding code. If ''null'' was allowed the programmer would always have to worry about the ''null'' case.
+[Nullable Types RFC](https://wiki.php.net/rfc/nullable_types)はこの欠点などに取り組むもの
+である。
 
-The [[rfc:nullable_types|Nullable Types RFC]] addresses this shortcoming and more.
+==== 戻り値型を宣言できないメソッド ====
 
-==== Methods which cannot declare return types ====
+クラスコンストラクタ、デストラクタ、クローンメソッドは戻り値を宣言しなくてよい。それぞれのエラーメッセージは
+以下である：
+- ```Fatal error: Constructor %s::%s() cannot declare a return type in %s on line %s```
+- ```Fatal error: Destructor %s::__destruct() cannot declare a return type in %s on line %s```
+- ```Fatal error: %s::__clone() cannot declare a return type in %s on line %s```
 
-Class constructors, destructors and clone methods may not declare return types. Their respective error messages are:
+==== 例 ====
 
-  * ```Fatal error: Constructor %s::%s() cannot declare a return type in %s on line %s```
-  * ```Fatal error: Destructor %s::__destruct() cannot declare a return type in %s on line %s```
-  * ```Fatal error: %s::__clone() cannot declare a return type in %s on line %s```
+有効な使用法と無効な使用法のスニペットをいくつか挙げる。
 
-==== Examples ====
-Here are some snippets of both valid and invalid usage.
-
-=== Examples of Valid Use ===
+=== 有効な使用の例 ===
 ```php
-// Overriding a method that did not have a return type:
+// 戻り値型のないメソッドをオーバーライド：
 interface Comment {}
 interface CommentsIterator extends Iterator {
     function current(): Comment;
 }
 ```
 ```php
-// Using a generator:
+// ジェネレータを使用する
 
 interface Collection extends IteratorAggregate {
     function getIterator(): Iterator;
@@ -163,13 +170,14 @@ class SomeCollection implements Collection {
 }
 ```
 
-=== Examples of Invalid Use ===
+=== 無効な使用の例 ===
 
-The error messages are taken from the current patch.
+エラーメッセージは現在のパッチに含まれている
+
 ----
 
 ```php
-// Covariant return-type:
+// 共変戻り値型：
 
 interface Collection {
     function map(callable $fn): Collection;
@@ -179,46 +187,51 @@ interface Set extends Collection {
     function map(callable $fn): Set;
 }
 ```
-''Fatal error: Declaration of Set::map() must be compatible with Collection::map(callable $fn): Collection in %s on line %d''
+
+```Fatal error: Declaration of Set::map() must be compatible with Collection::map(callable $fn): Collection in %s on line %d```
+
 ----
 ```php
-// Returned type does not match the type declaration
+// 戻り型が型宣言と一致しない
 
 function get_config(): array {
     return 42;
 }
 get_config();
 ```
-''Catchable fatal error: Return value of get_config() must be of the type array, integer returned in %s on line %d''
+
+```Catchable fatal error: Return value of get_config() must be of the type array, integer returned in %s on line %d```
 
 ----
 
 ```php
-// Int is not a valid type declaration
+// intは有効な型宣言ではない
 
 function answer(): int {
     return 42;
 }
 answer();
 ```
-''Catchable fatal error: Return value of answer() must be an instance of int, integer returned in %s on line %d''
+
+```Catchable fatal error: Return value of answer() must be an instance of int, integer returned in %s on line %d```
 
 ----
 
 ```php
-// Cannot return null with a return type declaration
+// 戻り値型宣言のある場所でnullを返すことはできない
 
 function foo(): DateTime {
     return null;
 }
 foo();
 ```
-''Catchable fatal error: Return value of foo() must be an instance of DateTime, null returned in %s on line %d''
+
+```Catchable fatal error: Return value of foo() must be an instance of DateTime, null returned in %s on line %d```
 
 ----
 
 ```php
-// Missing return type on override
+// オーバーライド時に戻り値型がない
 
 class User {}
 
@@ -227,62 +240,78 @@ interface UserGateway {
 }
 
 class UserGateway_MySql implements UserGateway {
-    // must return User or subtype of User
+    // UserかUserのサブタイプを返さなければならない
     function find($id) {
         return new User();
     }
 }
 ```
-''Fatal error: Declaration of UserGateway_MySql::find() must be compatible with UserGateway::find($id): User in %s on line %d''
+
+```Fatal error: Declaration of UserGateway_MySql::find() must be compatible with UserGateway::find($id): User in %s on line %d```
 
 ----
 
 ```php
-// Generator return types can only be declared as Generator, Iterator or Traversable (compile time check)
+// ジェネレータの戻り値型はジェネレータ、イテレータ、もしくはトラバーサブルとしてのみ宣言できる（コンパイル時の検査） Iterator or Traversable (compile time check)
 
 function foo(): array {
     yield [];
 }
 ```
-''Fatal error: Generators may only declare a return type of Generator, Iterator or Traversable, %s is not permitted in %s on line %d''
 
+```Fatal error: Generators may only declare a return type of Generator, Iterator or Traversable, %s is not permitted in %s on line %d```
 
-==== Multiple Return Types ====
-This proposal specifically does not allow declaring multiple return types; this is out of the scope of this RFC and would require a separate RFC if desired.
+==== 複数の戻り値型 ====
 
-If you want to use multiple return types in the meantime, simply omit a return type declaration and rely on PHP's excellent dynamic nature.
+この提案は複数の戻り値型宣言を明確に許可しない。これはこのRFCのスコープ外であり、望む場合は
+別のRFCが必要になるだろう。
 
-==== Reflection ====
+その間もし複数の戻り値型を使用したいなら、単純に戻り値型宣言を省略し、PHPの素晴らしい動的性質に
+頼ろう。
 
-This RFC purposefully omits reflection support as there is an open RFC about improving type information in reflection: https://wiki.php.net/rfc/reflectionparameter.typehint
+==== リフレクション ====
 
-==== Differences from Past RFCs ====
-This proposal differs from past RFCs in several key ways:
+このRFCは、敢えてリフレクションのサポートを除外している。リフレクションの型情報について進行中の
+RFCがあるからだ： [Add typehint accessors to ReflectionParameter](https://wiki.php.net/rfc/reflectionparameter.typehint)
 
-  * **The return type is positioned after the parameter list.** See [[#position_of_type_declaration|Position of Type Declaration]] for more information about this decision.
-  * **We keep the current type options.** Past proposals have suggested new types such as ''void'', ''int'', ''string'' or ''scalar''; this RFC does not include any new types. Note that it does allow ''self'' and ''parent'' to be used as return types.
-  * **We keep the current search patterns.** You can still search for ```phpfunction foo``` to find ```phpfoo```'s definition; all previous RFCs broke this common workflow.
-  * **We allow return type declarations on all function types**. Will Fitch's proposal suggested that we allow it for methods only.
-  * **We do not modify or add keywords.** Past RFCs have proposed new keywords such as ''nullable'' and more. We still require the ```phpfunction``` keyword.
+==== 過去のRFCとの違い ====
 
-===== Other Impact =====
+この提案は過去のRFCといくつかの重要な点で異なっている：
+- **戻り値型を引数リストの後に置く。** この決定について詳しい情報は「型宣言の場所」を参照してほしい。
+- **現在の型オプションを維持する。** 過去の提案は"void"、"int"、"string"、または"scalar"といった
+ 新しい型を提案してきた。このRFCは新しい型を何も含んでいない。"self"と"parent"を戻り値型として
+ 使用できることに注意してほしい。
+- **現在の検索パターンを維持する。** 今後も```function foo```で```foo```の定義を検索することが
+ できる。従来のRFCは全てこの共通したワークフローを破壊するものだった。
+- **全ての関数タイプで戻り値型を宣言できる。** Will Fitchの提案はメソッドのみで宣言できることを
+ 提案した。
+- **キーワードを変更したり追加したりしない。** 過去のRFCは"nullable"やその他の新しいキーワードを
+ 提案してきた。今後も必要なのは```function```キーワードである。
+
+===== その他の影響 =====
 
 ==== On Backward Compatiblity ====
+
 This RFC is backwards compatible with previous PHP releases.
 
 ==== On SAPIs ====
+
 There is no impact on any SAPI.
 
 ==== On Existing Extensions =====
+
 The structs ''zend_function'' and ''zend_op_array'' have been changed; extensions that work directly with these structs may be impacted.
 
 ==== On Performance ====
+
 An informal test indicates that performance has not seriously degraded. More formal performance testing can be done before voting phase.
 
 ===== Proposed PHP Version(s) =====
+
 This RFC targets PHP 7.
 
 ===== Vote =====
+
 This RFC modifies the PHP language syntax and therefore requires a two-third majority of votes.
 
 Should return types as outlined in this RFC be added to the PHP language? Voting will end on January 23, 2015.
@@ -298,6 +327,7 @@ Dmitry and I have updated the implementation to a more current master branch her
 This RFC was merged into the master branch (PHP 7) in commit [[https://git.php.net/?p=php-src.git;a=commit;h=638d0cb7531525201e00577d5a77f1da3f84811e|638d0cb7531525201e00577d5a77f1da3f84811e]].
 
 ===== Future Work =====
+
 Ideas for future work which are out of the scope of this RFC include:
 
   * Allow functions to declare that they do not return anything at all (''void'' in Java and C)
@@ -307,6 +337,7 @@ Ideas for future work which are out of the scope of this RFC include:
   * Update documentation to use the new return type syntax.
 
 ===== References =====
+
   * [[rfc:returntypehint2|Method Return Type-hints]] by Will Fitch; 2011. [[http://marc.info/?t=132443368800001&r=1&w=2|Mail Archive]].
   * [[rfc:returntypehint|Return Type-hint]] by Felipe; 2010. [[http://marc.info/?l=php-internals&m=128036818909738&w=2|Mail Archive]]
   * [[rfc:typehint|Return value and parameter type hint]] by Felipe; 2008. [[http://marc.info/?l=php-internals&m=120753976214848&w=2|Mail Archive]].
