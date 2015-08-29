@@ -262,24 +262,33 @@ function foo(): array {
 ```Fatal error: Generators may only declare a return type of Generator, Iterator or Traversable, %s is not permitted in %s on line %d```
 
 ==== 複数の戻り値型 ====
-This proposal specifically does not allow declaring multiple return types; this is out of the scope of this RFC and would require a separate RFC if desired.
 
-If you want to use multiple return types in the meantime, simply omit a return type declaration and rely on PHP's excellent dynamic nature.
+この提案は複数の戻り値型宣言を明確に許可しない。これはこのRFCのスコープ外であり、望む場合は
+別のRFCが必要になるだろう。
 
-==== Reflection ====
+その間もし複数の戻り値型を使用したいなら、単純に戻り値型宣言を省略し、PHPの素晴らしい動的性質に
+頼ろう。
 
-This RFC purposefully omits reflection support as there is an open RFC about improving type information in reflection: https://wiki.php.net/rfc/reflectionparameter.typehint
+==== リフレクション ====
 
-==== Differences from Past RFCs ====
-This proposal differs from past RFCs in several key ways:
+このRFCは、敢えてリフレクションのサポートを除外している。リフレクションの型情報について進行中の
+RFCがあるからだ： [Add typehint accessors to ReflectionParameter](https://wiki.php.net/rfc/reflectionparameter.typehint)
 
-  * **The return type is positioned after the parameter list.** See [[#position_of_type_declaration|Position of Type Declaration]] for more information about this decision.
-  * **We keep the current type options.** Past proposals have suggested new types such as ''void'', ''int'', ''string'' or ''scalar''; this RFC does not include any new types. Note that it does allow ''self'' and ''parent'' to be used as return types.
-  * **We keep the current search patterns.** You can still search for ```phpfunction foo``` to find ```phpfoo```'s definition; all previous RFCs broke this common workflow.
-  * **We allow return type declarations on all function types**. Will Fitch's proposal suggested that we allow it for methods only.
-  * **We do not modify or add keywords.** Past RFCs have proposed new keywords such as ''nullable'' and more. We still require the ```phpfunction``` keyword.
+==== 過去のRFCとの違い ====
 
-===== Other Impact =====
+この提案は過去のRFCといくつかの重要な点で異なっている：
+- **戻り値型を引数リストの後に置く。** この決定について詳しい情報は「型宣言の場所」を参照してほしい。
+- **現在の型オプションを維持する。** 過去の提案は"void"、"int"、"string"、または"scalar"といった
+ 新しい型を提案してきた。このRFCは新しい型を何も含んでいない。"self"と"parent"を戻り値型として
+ 使用できることに注意してほしい。
+- **現在の検索パターンを維持する。** 今後も```function foo```で```foo```の定義を検索することが
+ できる。従来のRFCは全てこの共通したワークフローを破壊するものだった。
+- **全ての関数タイプで戻り値型を宣言できる。** Will Fitchの提案はメソッドのみで宣言できることを
+ 提案した。
+- **キーワードを変更したり追加したりしない。** 過去のRFCは"nullable"やその他の新しいキーワードを
+ 提案してきた。今後も必要なのは```function```キーワードである。
+
+===== その他の影響 =====
 
 ==== On Backward Compatiblity ====
 This RFC is backwards compatible with previous PHP releases.
