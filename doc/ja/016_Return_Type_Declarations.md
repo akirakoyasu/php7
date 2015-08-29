@@ -146,16 +146,16 @@ function foo(): DateTime {
 
 有効な使用法と無効な使用法のスニペットをいくつか挙げる。
 
-=== Examples of Valid Use ===
+=== 有効な使用の例 ===
 ```php
-// Overriding a method that did not have a return type:
+// 戻り値型のないメソッドをオーバーライド：
 interface Comment {}
 interface CommentsIterator extends Iterator {
     function current(): Comment;
 }
 ```
 ```php
-// Using a generator:
+// ジェネレータを使用する
 
 interface Collection extends IteratorAggregate {
     function getIterator(): Iterator;
@@ -170,13 +170,14 @@ class SomeCollection implements Collection {
 }
 ```
 
-=== Examples of Invalid Use ===
+=== 無効な使用の例 ===
 
-The error messages are taken from the current patch.
+エラーメッセージは現在のパッチに含まれている
+
 ----
 
 ```php
-// Covariant return-type:
+// 共変戻り値型：
 
 interface Collection {
     function map(callable $fn): Collection;
@@ -186,46 +187,51 @@ interface Set extends Collection {
     function map(callable $fn): Set;
 }
 ```
-''Fatal error: Declaration of Set::map() must be compatible with Collection::map(callable $fn): Collection in %s on line %d''
+
+```Fatal error: Declaration of Set::map() must be compatible with Collection::map(callable $fn): Collection in %s on line %d```
+
 ----
 ```php
-// Returned type does not match the type declaration
+// 戻り型が型宣言と一致しない
 
 function get_config(): array {
     return 42;
 }
 get_config();
 ```
-''Catchable fatal error: Return value of get_config() must be of the type array, integer returned in %s on line %d''
+
+```Catchable fatal error: Return value of get_config() must be of the type array, integer returned in %s on line %d```
 
 ----
 
 ```php
-// Int is not a valid type declaration
+// intは有効な型宣言ではない
 
 function answer(): int {
     return 42;
 }
 answer();
 ```
-''Catchable fatal error: Return value of answer() must be an instance of int, integer returned in %s on line %d''
+
+```Catchable fatal error: Return value of answer() must be an instance of int, integer returned in %s on line %d```
 
 ----
 
 ```php
-// Cannot return null with a return type declaration
+// 戻り値型宣言のある場所でnullを返すことはできない
 
 function foo(): DateTime {
     return null;
 }
 foo();
 ```
-''Catchable fatal error: Return value of foo() must be an instance of DateTime, null returned in %s on line %d''
+
+```Catchable fatal error: Return value of foo() must be an instance of DateTime, null returned in %s on line %d```
 
 ----
 
 ```php
-// Missing return type on override
+// オーバーライド時に戻り値型がない
 
 class User {}
 
@@ -234,27 +240,28 @@ interface UserGateway {
 }
 
 class UserGateway_MySql implements UserGateway {
-    // must return User or subtype of User
+    // UserかUserのサブタイプを返さなければならない
     function find($id) {
         return new User();
     }
 }
 ```
-''Fatal error: Declaration of UserGateway_MySql::find() must be compatible with UserGateway::find($id): User in %s on line %d''
+
+```Fatal error: Declaration of UserGateway_MySql::find() must be compatible with UserGateway::find($id): User in %s on line %d```
 
 ----
 
 ```php
-// Generator return types can only be declared as Generator, Iterator or Traversable (compile time check)
+// ジェネレータの戻り値型はジェネレータ、イテレータ、もしくはトラバーサブルとしてのみ宣言できる（コンパイル時の検査） Iterator or Traversable (compile time check)
 
 function foo(): array {
     yield [];
 }
 ```
-''Fatal error: Generators may only declare a return type of Generator, Iterator or Traversable, %s is not permitted in %s on line %d''
 
+```Fatal error: Generators may only declare a return type of Generator, Iterator or Traversable, %s is not permitted in %s on line %d```
 
-==== Multiple Return Types ====
+==== 複数の戻り値型 ====
 This proposal specifically does not allow declaring multiple return types; this is out of the scope of this RFC and would require a separate RFC if desired.
 
 If you want to use multiple return types in the meantime, simply omit a return type declaration and rely on PHP's excellent dynamic nature.
